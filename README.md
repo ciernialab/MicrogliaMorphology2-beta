@@ -156,7 +156,7 @@ These cutoffs come from the synthetic benchmark images (contrast 2.48 to 1.66; S
 
 ## Step 2. TestImageSettingsPicker
 
-**In short:** open the same test image, run *Plugins > MicrogliaMorphology > MicrogliaMorphology TestImageSettingsPicker v12*, confirm the image type, place the test box, click the cells inside it, and wait. Review the saved montage (rows are options, columns are minimum area filters) and choose the settings that keep ramified cells whole, leave few non-cell particles and separate touching cells.
+**In short:** open the same test image, run *Plugins > MicrogliaMorphology > MicrogliaMorphology TestImageSettingsPicker*, confirm the image type, place the test box, click the cells inside it, and wait. Review the saved montage (rows are options, columns are minimum area filters) and choose the settings that keep ramified cells whole, leave few non-cell particles and separate touching cells.
 
 <details>
 <summary>
