@@ -358,7 +358,7 @@ All outputs are placed next to the input folder.
 | `ThresholdedImages/<image>_thresholded.tif` | Step 1 masks |
 | `SplitImages/<image>_thresholded.tif` | Step 2 masks with touching cells separated |
 | `MeasurementResults/<image>.csv` | Step 3: one .csv per input image with one row per cell |
-| `Areas.csv` | Area of each image (or of the ROIs within it). Use it in MicrogliaMorphologyR to calculate density (cells / area analyzed) |
+| `Areas.csv` | Area of each image (or of the ROIs within it) |
 | `SplitLog.csv` | Record of the splitting step |
 | `FinalDatasetParameters_<date-time>.txt` | Every setting used in the run, for your records. Keep it with your data |
 
@@ -529,7 +529,6 @@ In single image mode with **"Mark cells now"**, click once on every microglia in
 #### Limits
 
 - A max projection can merge nuclei at different depths, and a microglia whose nucleus is not in the DAPI projection cannot be counted.
-- Only the first time point is used for time series.
 </details>
 
 <details>
