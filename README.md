@@ -69,7 +69,6 @@ If you are interested in specific regions within your images, trace them in Imag
 #### Install Fiji and the required plugins
 
 - [FIJI/ImageJ](https://imagej.net/software/fiji/?Downloads)
-- [BioVoxxel Toolbox](https://imagej.net/plugins/biovoxxel-toolbox)
 
 Within Fiji, the Program also uses the Auto Threshold, Auto Local Threshold and Tubeness plugins, and Skeletonize (2D/3D). These are included in a standard Fiji install. MorphoLibJ is optional (the Close- step falls back to a standard method if it is absent).
 
