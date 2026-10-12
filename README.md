@@ -315,6 +315,7 @@ Enter the option you chose in the TestImageSettingsPicker. Step 1 has two dialog
 ![](./images/Program_split.png)
 
 - **No splitting** or **Soma-seeded split (recommended).** One seed is placed per soma from the blurred original image and the mask is cut along watershed lines between seeds. A cell with branches is not cut.
+- How soma-seeded splitting works: The macro blurs the original image so that each cell body (soma) becomes one bright peak, and thin branches disappear. Particles with two or more peaks are cut along lines midway between the peaks, and particles with one peak are left whole. A single cell with many branches is therefore never cut, but two touching cells with separate somas are. Lower seed sigma or prominence finds more seeds and cuts more. Higher values cut less. Compare settings in the TestImageSettingsPicker montage (yellow lines show the cuts).
 - **Seed blur sigma (um)** (default 3) and **prominence** in 8-bit grey levels (default 8).
 - Splitting replaces the old upper area filter. Only particles at or above the minimum area are split.
 
