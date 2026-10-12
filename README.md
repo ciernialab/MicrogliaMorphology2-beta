@@ -93,7 +93,7 @@ Within Fiji, the Program also uses the Auto Threshold, Auto Local Threshold and 
 
 ## Step 1. ImageQualityCheck
 
-**In short:** open one representative single-channel image, run *Plugins > MicrogliaMorphology > MicrogliaMorphology ImageQualityCheck*, trace whole cells and cell-free background areas when prompted, and read the Log window. The macro classifies your image as low, medium or high background and as high, intermediate or low SNR, and suggests starting settings.
+**In short:** open one representative single-channel image, run *Plugins > MicrogliaMorphology > MicrogliaMorphology ImageQualityCheck*, trace whole cells and cell-free background areas when prompted, and read the Log window. The macro classifies your image as low, medium or high background and as high, intermediate or low signal-to-noise-ratio (SNR), and suggests starting settings.
 
 <details>
 <summary>
