@@ -112,7 +112,7 @@ Within Fiji, the Program also uses the Auto Threshold, Auto Local Threshold and 
     - **Microglia channel**, **test box size**, **panel size**, **montage columns**, and an optional **quick test** that processes only the central N x N pixels (shortens the run on large images, since Tubeness is slow).
     - **Pruning check:** the percentage used to decide that a cell is complete (default 60, see below).
 
-![](./images/Picker_dialog.png)
+![](./images/picker_dialog_01.png)
 
 3.  Confirm the pixel size when asked. If it is wrong, untick the box and enter the correct pixel width in microns. The value is used for every image in the run and the image file is not changed.
 
