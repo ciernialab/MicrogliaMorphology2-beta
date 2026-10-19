@@ -30,7 +30,7 @@ Run the macros in the order below. Each one is found in Fiji under *Plugins > Mi
 | Step | Macro | What you do | What you get |
 | ---- | ----- | ----------- | ------------ |
 | 0 | **Install** | Install Fiji and copy the macros into the Fiji plugins folder | Macros appear in the Plugins menu |
-| 1 | **TestImageSettingsPicker (v13 AllOptions)** | Open a test image, place a test box and click every microglia in it | About 93 options tested and ranked, a Top 20 montage and csv, and the settings to use for your dataset |
+| 1 | **TestImageSettingsPicker** | Open a test image, place a test box and click every microglia in it | About 93 options tested and ranked, a Top 20 montage and csv, and the settings to use for your dataset |
 | 2 | **MicrogliaMorphologyProgram 2.3** | Pick the Picker's option from a list (or paste its name) and run on the whole dataset | Thresholded masks, split masks and one measurement .csv per image |
 | 3 | **Cluster in R** | Run [MicrogliaMorphologyR](https://github.com/ciernialab/MicrogliaMorphologyR) on the measurement files | Morphological clusters and a ColorByCluster label file per image |
 | 4 | **CBC (ColorByCluster)** | Point the macro at the original images, final masks and cluster label files | Original images with every microglia colored by its cluster |
@@ -78,8 +78,7 @@ Within Fiji, the Program also uses the Auto Threshold, Auto Local Threshold and 
 
 2.  Save the following files from this repo (macros-scripts folder) into the new MicrogliaMorphology directory:
 
-- **MicrogliaMorphology_TestImageSettingsPicker_v13_AllOptions.ijm**
-- **MicrogliaMorphology_TopOptionsReport.ijm** (optional, to re-rank a finished Picker run)
+- **MicrogliaMorphology_TestImageSettingsPicker_v13.ijm**
 - **MicrogliaMorphology_Program2.3.ijm**
 - **MicrogliaMorphology_ColorByCluster.ijm**
 - **MicrogliaMorphology_CountMicroglia_v1.ijm** (optional)
@@ -91,9 +90,9 @@ Within Fiji, the Program also uses the Auto Threshold, Auto Local Threshold and 
 
 ---
 
-## Step 1. TestImageSettingsPicker (v13 AllOptions)
+## Step 1. TestImageSettingsPicker
 
-**In short:** open a representative single-channel test image, run *Plugins > MicrogliaMorphology > MicrogliaMorphology TestImageSettingsPicker v13 AllOptions*, place the test box, click every microglia inside it, and wait (about 20 to 30 minutes for a 2000 x 2000 px image). The macro runs about 93 options, counts how many of your marked cells each one recovers whole, and saves a ranked list (`AllOptions_Ranked.csv`), the best 20 (`Top20_Options.csv`) and a montage of those 20 (`Top20_Montage.png`) that starts with your original image. Check the top options by eye and use the best one in Step 2.
+**In short:** open a representative single-channel test image, run *Plugins > MicrogliaMorphology > MicrogliaMorphology TestImageSettingsPicker*, place the test box, click every microglia inside it, and wait (about 60 minutes for a 2000 x 2000 px image). The macro runs about 93 options, counts how many of your marked cells each one recovers whole, and saves a ranked list (`AllOptions_Ranked.csv`), the best 20 (`Top20_Options.csv`) and a montage of those 20 (`Top20_Montage.png`) that starts with your original image. Check the top options by eye and use the best one in Step 2.
 
 <details>
 <summary>
@@ -101,15 +100,6 @@ Within Fiji, the Program also uses the Auto Threshold, Auto Local Threshold and 
    ### TestImageSettingsPicker details
 </summary>
 
-#### What changed from v12
-
-- **All options are always run.** There is no image-type (background and SNR) choice. There are 31 base options, each run unsplit, with the soma-seeded split, and with the soma-seeded split plus a seed requirement.
-- **Background removal is part of the options.** Rolling ball (RB), sliding paraboloid (SP) and white top-hat (TH) are applied before the other preprocessing. In the option name the size is in um, so `C0U1D1_RB25_local_Niblack_r100` is a 25 um rolling ball followed by Program 2 preprocessing and a local Niblack threshold.
-- **Hysteresis thresholding** (`hyst`): a local low threshold, keeping only particles that also contain a pixel of a strict global Otsu threshold. Names read `C0U1D1_hyst_Niblack-hiOtsu_r100`.
-- **Seed requirement** (`_seedReq`): after the split, particles with no soma seed are removed as non-cell objects.
-- **Marking cells is required**, because the cell counts rank the options.
-- **Pruning check.** A cell only counts as recovered if its particle is also complete (see below).
-- **Automatic ranking.** The best 20 options and the full ranked list are saved at the end of the run.
 
 #### Procedure
 
@@ -138,7 +128,7 @@ Within Fiji, the Program also uses the Auto Threshold, Auto Local Threshold and 
 
 6.  Wait for the run to finish. The Top 20 montage opens when done.
 
-The screenshots above are from v12, so the v13 dialog differs a little. Use the fields listed in step 2.
+
 
 #### How to read the montage panels
 
@@ -191,9 +181,6 @@ Outputs are saved in a new folder next to the image, `SettingsTest_<image>/`:
 | `PreprocessBenchmark_Results.csv` | Particle counts and other metrics for each option and filter |
 | `Masks/<option>/` | The binary mask of every option |
 
-#### Re-ranking a finished run: TopOptionsReport
-
-Run *MicrogliaMorphology TopOptionsReport* and choose a `SettingsTest_<image>` folder to rank the same results again, for example to show the top 10, to cap the non-cell particles, or to rank by a different rule (most cells recovered first, or fewest non-cell particles first). It writes the same `Top<N>_Options.csv`, `AllOptions_Ranked.csv` and `Top<N>_Montage.png`.
 
 #### Options compared
 
@@ -210,12 +197,6 @@ Option names follow the pattern `C<contrast stretch>U<unsharp mask>D<despeckle>[
 
 These come from the synthetic benchmark images, scored by the equal-recovery score (mean recall over four cell shapes minus its spread). Your own ranking on a real image is the better guide.
 
-| Image type | What worked best |
-| ---------- | ---------------- |
-| Low background, high SNR | Tubeness with cutoff 20 (best score, very few non-cell particles) |
-| Low background, low SNR | Local thresholds (Niblack, Mean) with unsharp mask |
-| Medium background | Huang (close to Niblack with about half the non-cell particles) or Niblack with a 100 um^2 or larger filter |
-| High background | All methods lose ramified cells. Phansalkar keeps the fewest non-cell particles. Use a 130 to 150 um^2 filter and check by eye |
 
 **Write down the full option name from `Top20_Options.csv`, and its `Min_area_um2`.** You will enter them in Step 2.
 </details>
