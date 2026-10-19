@@ -224,7 +224,7 @@ If you start at step 1 or 2, a second dialog asks for the settings. You can choo
 
 **1. List/Enter Full Entry**
 
-![](./images/MicrogliaMorphologyDialog2.png)
+![](./images/Dialog3a.png)
 
 - **Pick from the lists:** choose one of the Picker's base options, then a splitting variant: soma-seeded split + seed requirement (`_splitSoma_seedReq`, the default), soma-seeded split (`_splitSoma`), or no splitting.
 - **Paste the option name:** copy it from `Top20_Options.csv` or `AllOptions_Ranked.csv`, for example `C0U1D1_RB25_local_Mean_r100_splitSoma_seedReq`. A pasted name overrides the lists and also reads non-default seed settings, for example `C0U1D1_local_Niblack_r100_splitSoma_s2.0_p12_seedReq`.
@@ -237,6 +237,8 @@ The arm names and the settings file use the same names as the Picker, so the run
 
 **2. Manual Entry**
 To set everything manually, choose "(set every option myself in the next dialogs)" in the list. The dialogs then walk you through each set of options for background removal, preprocessing, and thresholding. 
+
+![](./images/MicrogliaMorphologyDialog2.png)
 
 #### Step 1 settings: preprocessing and thresholding (manual option only)
 
