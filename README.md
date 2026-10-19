@@ -6,7 +6,7 @@ MicrogliaMorphology is a set of ImageJ/Fiji macros that offer a semi-automated a
 This is a modified version of [MicrogliaMorphology](https://github.com/ciernialab/MicrogliaMorphology) with several changes. It is more stable on big datasets that crashed the original pipeline, it can run on multiple regions per image, and it can quantify the intensity of another channel within the microglia. The output measurements are slightly different, so if you want to replicate the original data, please refer to the original GitHub.
 The former FracLac analysis had a memory leak that caused problems beyond roughly 20,000 cells. FracLac is no longer used and individual image files are no longer created for every cell, which decreases the file load.
 
-**Created**: 21 January, 2026 **Last updated**: 12 Oct, 2026
+**Created**: 21 January, 2026 **Last updated**: 18 Oct, 2026
 
 <details>
 <summary>
@@ -30,11 +30,10 @@ Run the macros in the order below. Each one is found in Fiji under *Plugins > Mi
 | Step | Macro | What you do | What you get |
 | ---- | ----- | ----------- | ------------ |
 | 0 | **Install** | Install Fiji and copy the macros into the Fiji plugins folder | Macros appear in the Plugins menu |
-| 1 | **ImageQualityCheck** | Open one representative image, trace a few cells and a few background areas | Contrast ratio, signal-to-noise ratio (SNR) and a background/SNR class for your images |
-| 2 | **TestImageSettingsPicker** | Run on the same test image, then compare the montage of segmentation options | The preprocessing, threshold and splitting settings to use for your dataset |
-| 3 | **MicrogliaMorphologyProgram** | Enter the chosen settings and run on the whole dataset | Thresholded masks, split masks and one measurement .csv per image |
-| 4 | **Cluster in R** | Run [MicrogliaMorphologyR](https://github.com/ciernialab/MicrogliaMorphologyR) on the measurement files | Morphological clusters and a ColorByCluster label file per image |
-| 5 | **CBC (ColorByCluster)** | Point the macro at the original images, final masks and cluster label files | Original images with every microglia colored by its cluster |
+| 1 | **TestImageSettingsPicker (v13 AllOptions)** | Open a test image, place a test box and click every microglia in it | About 93 options tested and ranked, a Top 20 montage and csv, and the settings to use for your dataset |
+| 2 | **MicrogliaMorphologyProgram 2.3** | Pick the Picker's option from a list (or paste its name) and run on the whole dataset | Thresholded masks, split masks and one measurement .csv per image |
+| 3 | **Cluster in R** | Run [MicrogliaMorphologyR](https://github.com/ciernialab/MicrogliaMorphologyR) on the measurement files | Morphological clusters and a ColorByCluster label file per image |
+| 4 | **CBC (ColorByCluster)** | Point the macro at the original images, final masks and cluster label files | Original images with every microglia colored by its cluster |
 | Optional | **CountMicroglia** | Run on Iba1 + DAPI images | Microglia counts and densities per region |
 
 **Before you start: name your images with metadata.** When generating the single-channel .tiff images that contain the microglia, include the important metadata in the file name, with each descriptor separated by an underscore, for example `CohortName_AnimalID_Condition_Sex_BrainRegion.tiff`. This format is important for compatibility with [MicrogliaMorphologyR](https://github.com/ciernialab/MicrogliaMorphologyR).
@@ -51,14 +50,14 @@ If you are interested in specific regions within your images, trace them in Imag
 
 - Name the ROIs and save your .tif files so that they include the ROIs.
 - In the Program, tick **"Do your images have ROIs traced?"**. Only the part of each image inside the ROIs is then measured.
-- ImageQualityCheck and TestImageSettingsPicker do not use traced ROIs. ImageQualityCheck measures only the regions you draw and the Picker analyzes the whole image.
+- TestImageSettingsPicker does not use traced ROIs. It analyzes the test box you place in the whole image.
 </details>
 
 ---
 
 ## Step 0. Installation
 
-**In short:** install Fiji and BioVoxxel Toolbox, copy the five macro files into a new `MicrogliaMorphology` folder inside `Fiji.app/scripts/Plugins`, and restart Fiji.
+**In short:** install Fiji and BioVoxxel Toolbox, copy the macro files into a new `MicrogliaMorphology` folder inside `Fiji.app/scripts/Plugins`, and restart Fiji.
 
 <details>
 <summary>
@@ -69,6 +68,7 @@ If you are interested in specific regions within your images, trace them in Imag
 #### Install Fiji and the required plugins
 
 - [FIJI/ImageJ](https://imagej.net/software/fiji/?Downloads)
+- [BioVoxxel Toolbox](https://imagej.net/plugins/biovoxxel-toolbox)
 
 Within Fiji, the Program also uses the Auto Threshold, Auto Local Threshold and Tubeness plugins, and Skeletonize (2D/3D). These are included in a standard Fiji install. MorphoLibJ is optional (the Close- step falls back to a standard method if it is absent).
 
@@ -78,9 +78,9 @@ Within Fiji, the Program also uses the Auto Threshold, Auto Local Threshold and 
 
 2.  Save the following files from this repo (macros-scripts folder) into the new MicrogliaMorphology directory:
 
-- **MicrogliaMorphology_ImageQualityCheck.ijm**
-- **MicrogliaMorphology_TestImageSettingsPicker_v12.ijm**
-- **MicrogliaMorphology_Program2.2.ijm**
+- **MicrogliaMorphology_TestImageSettingsPicker_v13_AllOptions.ijm**
+- **MicrogliaMorphology_TopOptionsReport.ijm** (optional, to re-rank a finished Picker run)
+- **MicrogliaMorphology_Program2.3.ijm**
 - **MicrogliaMorphology_ColorByCluster.ijm**
 - **MicrogliaMorphology_CountMicroglia_v1.ijm** (optional)
 
@@ -91,72 +91,9 @@ Within Fiji, the Program also uses the Auto Threshold, Auto Local Threshold and 
 
 ---
 
-## Step 1. ImageQualityCheck
+## Step 1. TestImageSettingsPicker (v13 AllOptions)
 
-**In short:** open one representative single-channel image, run *Plugins > MicrogliaMorphology > MicrogliaMorphology ImageQualityCheck*, trace whole cells and cell-free background areas when prompted, and read the Log window. The macro classifies your image as low, medium or high background and as high, intermediate or low signal-to-noise-ratio (SNR), and suggests starting settings.
-
-<details>
-<summary>
-
-   ### ImageQualityCheck details
-</summary>
-
-#### Procedure
-
-1.  Open one representative image (single channel). For a stack or hyperstack, the current plane/channel is measured. RGB images must first be converted to 8-bit, 16-bit or 32-bit single channel.
-2.  Run the macro and enter how many cell examples and how many background examples you want to draw (default 5 each).
-
-![](./images/ImageQualityCheck_dialog.png)
-
-3.  **Cell examples:** trace WHOLE cells (soma plus processes) with the freehand or polygon tool, click OK in the prompt, and repeat.
-
-![](./images/ImageQualityCheck_cell.png)
-
-4.  **Background examples:** draw areas with NO cells, at least about 40 x 40 pixels, that are typical of the background. Include haze and fibres, not only the darkest area. Rectangles are fine.
-
-![](./images/ImageQualityCheck_background.png)
-
-5.  Read the Log window and the Results table. The Results table gets one row per run, so you can check several images and save the table.
-
-#### What is measured
-
-| Measure | Definition |
-| ------- | ---------- |
-| Contrast ratio | Median pixel value inside the cell regions divided by the median pixel value inside the background regions |
-| Noise SD | Robust (median absolute deviation) estimate from the diagonal high-frequency detail of the image inside the background regions |
-| SNR | (median cell - median background) / noise SD |
-
-#### Classification
-
-| Class | Rule |
-| ----- | ---- |
-| Low background | contrast ratio of 2.3 or more |
-| Medium background | contrast ratio between 1.8 and 2.3 |
-| High background | contrast ratio below 1.8 |
-| High SNR | SNR of 12 or more |
-| Intermediate SNR | SNR between 8 and 12 |
-| Low SNR | SNR below 8 |
-
-These cutoffs come from the synthetic benchmark images (contrast 2.48 to 1.66; SNR about 17 to 20 for high and 4.3 for low).
-
-#### Output
-
-- A summary pop-up and a Log window with the measurements, the classification, warnings and **suggested settings** (method, local threshold radius converted to pixels at your pixel size, and lower area filter, including the filter in pixels).
-- A Results table row with the columns `Image`, `N_cell_regions`, `N_bg_regions`, `Median_cell`, `Median_background`, `Noise_SD`, `Contrast_ratio`, `SNR`, `Background_class`, `SNR_class` and `Saturated_fraction`. TestImageSettingsPicker reads the last row of this table to preselect its image type, so run the two macros in the same Fiji session.
-
-#### Limits to keep in mind
-
-- Contrast depends on how the cell regions are drawn. Tracing only the soma overestimates contrast compared with the benchmark, which used whole cells.
-- The noise estimate assumes pixel-independent noise. Images that were smoothed, resampled, deconvolved or JPEG-compressed give a noise value that is too low (an SNR that is too high).
-- The recommendations come from synthetic images with one cell layout, so confirm them on real images in Step 2.
-- Warnings in the Log flag values outside the benchmarked range, saturation, very small background regions, noise that differs more than 1.5-fold between background regions, and images that are not calibrated in microns.
-</details>
-
----
-
-## Step 2. TestImageSettingsPicker
-
-**In short:** open the same test image, run *Plugins > MicrogliaMorphology > MicrogliaMorphology TestImageSettingsPicker*, confirm the image type, place the test box, click the cells inside it, and wait. Review the saved montage (rows are options, columns are minimum area filters) and choose the settings that keep ramified cells whole, leave few non-cell particles and separate touching cells.
+**In short:** open a representative single-channel test image, run *Plugins > MicrogliaMorphology > MicrogliaMorphology TestImageSettingsPicker v13 AllOptions*, place the test box, click every microglia inside it, and wait (about 20 to 30 minutes for a 2000 x 2000 px image). The macro runs about 93 options, counts how many of your marked cells each one recovers whole, and saves a ranked list (`AllOptions_Ranked.csv`), the best 20 (`Top20_Options.csv`) and a montage of those 20 (`Top20_Montage.png`) that starts with your original image. Check the top options by eye and use the best one in Step 2.
 
 <details>
 <summary>
@@ -164,16 +101,26 @@ These cutoffs come from the synthetic benchmark images (contrast 2.48 to 1.66; S
    ### TestImageSettingsPicker details
 </summary>
 
+#### What changed from v12
+
+- **All options are always run.** There is no image-type (background and SNR) choice. There are 31 base options, each run unsplit, with the soma-seeded split, and with the soma-seeded split plus a seed requirement.
+- **Background removal is part of the options.** Rolling ball (RB), sliding paraboloid (SP) and white top-hat (TH) are applied before the other preprocessing. In the option name the size is in um, so `C0U1D1_RB25_local_Niblack_r100` is a 25 um rolling ball followed by Program 2 preprocessing and a local Niblack threshold.
+- **Hysteresis thresholding** (`hyst`): a local low threshold, keeping only particles that also contain a pixel of a strict global Otsu threshold. Names read `C0U1D1_hyst_Niblack-hiOtsu_r100`.
+- **Seed requirement** (`_seedReq`): after the split, particles with no soma seed are removed as non-cell objects.
+- **Marking cells is required**, because the cell counts rank the options.
+- **Pruning check.** A cell only counts as recovered if its particle is also complete (see below).
+- **Automatic ranking.** The best 20 options and the full ranked list are saved at the end of the run.
+
 #### Procedure
 
-1.  Open the test image you used in ImageQualityCheck (if none is open, you are asked for a file).
+1.  Open a representative test image (if none is open, you are asked for a file).
 2.  Run the macro. In the first dialog set:
-    - **My image has:** preselected from the last ImageQualityCheck result. Choices are low/medium/high background combined with high/low SNR, or "Not sure: broad comparison". Each choice builds a different set of options to compare.
     - **Splitting touching cells:** compare both no split and soma-seeded split (recommended), soma-seeded split only, or no splitting only.
     - **Compare seed settings** (optional): tests seed blur sigma 3 vs 2 um and prominence 8 vs 12 for the lead option.
-    - **Mark the cells in the panel region** (recommended): lets the table count cells and non-cell particles.
-    - **Minimum area filter(s) in um^2:** comma separated, or leave blank to use the preset.
-    - **Microglia channel**, **test box size**, **panel size**, **montage columns**, and an optional **quick test** that processes only the central N x N pixels (useful for whole-slide images, since Tubeness is slow on large images).
+    - **Colour every kept particle differently** (recommended): each particle in the panels gets its own colour, so cuts and merged cells are easy to see.
+    - **Minimum area filter(s) in um^2:** comma separated (default 50,100). Leave it blank to use 50, 100, 130 and 150.
+    - **Microglia channel**, **test box size**, **panel size**, **montage columns**, and an optional **quick test** that processes only the central N x N pixels (shortens the run on large images, since Tubeness is slow).
+    - **Pruning check:** the percentage used to decide that a cell is complete (default 60, see below).
 
 ![](./images/Picker_dialog.png)
 
@@ -185,66 +132,47 @@ These cutoffs come from the synthetic benchmark images (contrast 2.48 to 1.66; S
 
 ![](./images/Picker_testbox.png)
 
-5.  **Mark the cells** (if you chose to): click on the cell body of EVERY microglia inside the box with the multi-point tool (Alt-click removes a point), then click OK. Cells you skip are counted as non-cell particles.
+5.  **Mark the cells:** click on the cell body of EVERY microglia inside the box with the multi-point tool (Alt-click removes a point), then click OK. Cells you skip are counted as non-cell particles.
 
 ![](./images/Picker_markcells.png)
 
-6.  Wait for the run to finish. The combined montage opens when done.
+6.  Wait for the run to finish. The Top 20 montage opens when done.
 
-#### How to read the montage
+The screenshots above are from v12, so the v13 dialog differs a little. Use the fields listed in step 2.
+
+#### How to read the montage panels
 
 Colors in each panel:
 
-- **White:** particle kept by the area filter
+- **Each kept particle has its own color** (when the colour option is ticked), otherwise white
+- **Black dots with a white ring:** the cells you marked
 - **Red:** particle removed (too small)
+- **Cyan:** particle removed (too big)
 - **Yellow:** line where touching cells were cut
 
-Look for ramified cells that are whole with their processes present, few red or white non-cell particles in the background, touching cells that are separated, and thin branches that are not lost.
+Look for ramified cells that are whole with their processes present, few non-cell particles in the background, touching cells that are separated, and thin branches that are not lost.
 
-#### Results: counts table
+#### How the options are ranked
 
-If you marked the cells, the macro also saves `SettingsTest_Summary.csv` (and shows it as a table). It has one row per option and minimum area filter. Counts are for the cells you marked inside the yellow test box only.
+For every option and area filter, the macro counts inside the test box:
 
 | Column | Meaning |
 | ------ | ------- |
-| Tile | Tile number of the option in the montage (matches `SettingsKey.txt`) |
-| Option | Option name |
-| Min_area_um2 | Minimum area filter for this row |
 | Cells_marked | Number of cells you marked |
 | Cells_recovered_alone | Marked cells found as their own particle |
+| Cells_complete_alone | Marked cells recovered alone whose particle is not over-pruned (see below) |
+| Median_completeness_pct | Median size of the particles of the marked cells, as a percentage of the typical particle for those cells across all options |
 | Cells_in_merged_particles | Marked cells found, but fused with another cell in one particle |
 | Cells_missed | Marked cells not found |
 | Non_cell_particles | Particles kept that do not contain a marked cell |
 
-**How to rank the options:** open the .csv in a spreadsheet and sort by `Cells_recovered_alone` (largest to smallest), then by `Non_cell_particles` (smallest to largest). The best options are those near the top with few non-cell particles and few missed cells. Then look at the same tiles in the montage to confirm by eye.
+**Net score = Cells_complete_alone minus Non_cell_particles.** The list is sorted by this score. An option appears once in `Top20_Options.csv`, at its best area filter. `AllOptions_Ranked.csv` lists every option at every area filter.
 
-In the example below, rows are sorted this way and the option in red was chosen: it recovered 39 of the 45 marked cells as single cells with only 7 non-cell particles at a 100 um^2 filter. Options at the top recovered a few more cells but kept 30 to 34 non-cell particles at a 50 um^2 filter.
+#### The pruning check
 
-![](./images/Picker_results.png)
+Counting a cell as recovered when its particle contains the marked soma rewards options that keep the soma but cut off the branches (tight local thresholds such as Phansalkar are the usual example). To catch this, the macro takes the area of the particle containing each marked cell and compares it with the median of that cell's particle areas across all options. An option only gets credit for a cell if its particle is at least the **pruning check percentage** of that typical area (default 60). The per-cell areas are saved in `MarkedCellAreas.csv`.
 
-#### Example montages at each minimum area filter
-
-One montage is saved per minimum area filter, so you can see how the filter changes each option. Each panel is labeled with its option, the filter, and (if you marked cells) the cell counts. A higher filter turns more small particles red (removed), which lowers the non-cell particles but can also remove small cells. The examples below use the same test box with filters of 50, 100 and 150 um^2.
-
-**Minimum area 50 um^2**
-
-![](./images/Picker_montage_min50.png)
-
-**Minimum area 100 um^2**
-
-![](./images/Picker_montage_min100.png)
-
-**Minimum area 150 um^2**
-
-![](./images/Picker_montage_min150.png)
-
-#### Options compared
-
-Option names follow the pattern `C<contrast stretch>U<unsharp mask>D<despeckle>_<method>`, where 1 is on and 0 is off. For example, `C0U1D1_auto_Huang` is Program 2 standard preprocessing (unsharp mask radius 3, weight 0.6, plus despeckle, no contrast stretch) followed by a global Huang threshold.
-
-- Global thresholds: Huang, Li
-- Local thresholds: Niblack, Mean, Phansalkar (radius 100 px at 0.3447 um/px, rescaled to your pixel size)
-- Tubeness ridge filter: TubeOrig and Tube3Post at fixed minimum responses, or noise-relative cutoffs written as `k5`
+The 60% default is a rule of thumb, not a validated cutoff. In one test run the particle sizes showed a gap between 55% and 65%, but check your own data: look at `Median_completeness_pct` in the ranked list and at the Top 20 montage, and raise or lower the percentage if good options are dropped or pruned options still rank high. Because the check is relative to the other options, it works best when the option list includes some options that keep the full branches.
 
 #### Output
 
@@ -252,14 +180,35 @@ Outputs are saved in a new folder next to the image, `SettingsTest_<image>/`:
 
 | File | Contents |
 | ---- | -------- |
+| `Top20_Options.csv` | The best 20 options with their counts and net score |
+| `Top20_Montage.png` | Review panels of those options in rank order, starting with the original image. Rank and area filter are written on each panel |
+| `AllOptions_Ranked.csv` | Every option at every area filter, ranked by the net score |
+| `SettingsTest_Summary.csv` | Counts for every option and area filter, including the completeness columns and the background removal, `Seed_required` and `Particles_removed_no_seed` columns |
+| `MarkedCellAreas.csv` | Area of the particle that contains each marked cell, for every option |
 | `ReviewMontage_<image>_ALL.png` | Rows are options, columns are minimum area filters |
 | `ReviewMontage_<image>_min<..>.png` | One montage per filter, first tile is the raw image |
-| `SettingsTest_Summary.csv` | Counts of recovered, merged and missed cells and non-cell particles per option and filter (when cells were marked) |
 | `SettingsKey.txt` | Tile number mapped to the exact settings of every option |
 | `PreprocessBenchmark_Results.csv` | Particle counts and other metrics for each option and filter |
 | `Masks/<option>/` | The binary mask of every option |
 
+#### Re-ranking a finished run: TopOptionsReport
+
+Run *MicrogliaMorphology TopOptionsReport* and choose a `SettingsTest_<image>` folder to rank the same results again, for example to show the top 10, to cap the non-cell particles, or to rank by a different rule (most cells recovered first, or fewest non-cell particles first). It writes the same `Top<N>_Options.csv`, `AllOptions_Ranked.csv` and `Top<N>_Montage.png`.
+
+#### Options compared
+
+Option names follow the pattern `C<contrast stretch>U<unsharp mask>D<despeckle>[_<background removal>]_<method>[_<splitting>]`, where 1 is on and 0 is off. For example, `C0U1D1_auto_Huang` is Program 2 standard preprocessing (unsharp mask radius 3, weight 0.6, plus despeckle, no contrast stretch) followed by a global Huang threshold.
+
+- Global thresholds: Huang, Li
+- Local thresholds: Niblack, Mean, Phansalkar (radius 100 px at 0.3447 um/px, rescaled to your pixel size)
+- Hysteresis: local low threshold plus a global Otsu high mask
+- Tubeness ridge filter: TubeOrig and Tube3Post at fixed minimum responses, or noise-relative cutoffs written as `k5`. Tubeness options are not combined with background removal
+- Background removal before the other preprocessing: rolling ball (RB), sliding paraboloid (SP), white top-hat (TH), sizes in um
+- Splitting: no suffix (unsplit), `_splitSoma` (soma-seeded split, default seed sigma 3 um and prominence 8), `_splitSoma_seedReq` (split plus the seed requirement). A non-default seed is written `_splitSoma_s2.0_p12`
+
 #### Starting points from the benchmark
+
+These come from the synthetic benchmark images, scored by the equal-recovery score (mean recall over four cell shapes minus its spread). Your own ranking on a real image is the better guide.
 
 | Image type | What worked best |
 | ---------- | ---------------- |
@@ -268,16 +217,14 @@ Outputs are saved in a new folder next to the image, `SettingsTest_<image>/`:
 | Medium background | Huang (close to Niblack with about half the non-cell particles) or Niblack with a 100 um^2 or larger filter |
 | High background | All methods lose ramified cells. Phansalkar keeps the fewest non-cell particles. Use a 130 to 150 um^2 filter and check by eye |
 
-These are starting points from synthetic images. The montage is how you confirm them on your own tissue.
-
-**Write down the option name and the settings from `SettingsKey.txt`.** You will enter them in Step 3.
+**Write down the full option name from `Top20_Options.csv`, and its `Min_area_um2`.** You will enter them in Step 2.
 </details>
 
 ---
 
-## Step 3. MicrogliaMorphologyProgram
+## Step 2. MicrogliaMorphologyProgram
 
-**In short:** run *Plugins > MicrogliaMorphology > MicrogliaMorphology Program2.2* on the whole dataset. It has three steps: (1) preprocess and threshold, (2) split touching cells, (3) measure single cells. Run all three in one go, or start and stop at any of them. Enter the settings you chose in Step 2.
+**In short:** run *Plugins > MicrogliaMorphology > MicrogliaMorphology Program2.3* on the whole dataset. It has three steps: (1) preprocess and threshold, (2) split touching cells, (3) measure single cells. Run all three in one go, or start and stop at any of them. Choose the option you picked in Step 1 from the list, or paste its name, and the Program sets the preprocessing, threshold and splitting for you.
 
 <details>
 <summary>
@@ -285,7 +232,7 @@ These are starting points from synthetic images. The montage is how you confirm 
    ### Program details: dialogs and settings
 </summary>
 
-The screenshots below enter the example option chosen in the TestImageSettingsPicker section: `C0U1D1_local_Niblack_r100_splitSoma_s2.0_p8` with a 100 um^2 lower area filter.
+The screenshots below are from Program 2.2 and show the manual dialogs, filled in with the example option `C0U1D1_local_Niblack_r100_splitSoma_s2.0_p8` and a 100 um^2 lower area filter. In Program 2.3 the same settings can be filled in automatically from the Picker option (next section).
 
 #### First dialog: where to start and stop
 
@@ -294,9 +241,24 @@ The screenshots below enter the example option chosen in the TestImageSettingsPi
 - **Start at / Finish at:** choose the first and last of the three steps. You can begin at step 2 or 3 if the earlier steps are already done.
 - **Create output folders automatically:** creates `ThresholdedImages`, `SplitImages` and `MeasurementResults` next to the input folder. If unticked you are asked to choose each output folder (they should be empty).
 
-#### Step 1 settings: preprocessing and thresholding
+#### Settings from the TestImageSettingsPicker
 
-Enter the option you chose in the TestImageSettingsPicker. Step 1 has two dialogs: 1a (preprocessing) and 1b (segmentation).
+If you start at step 1 or 2, a second dialog asks for the settings. You can choose them in one of two ways:
+
+- **Pick from the lists:** choose one of the Picker's 31 base options, then a splitting variant: soma-seeded split + seed requirement (`_splitSoma_seedReq`, the default), soma-seeded split (`_splitSoma`), or no splitting.
+- **Paste the option name:** copy it from `Top20_Options.csv` or `AllOptions_Ranked.csv`, for example `C0U1D1_RB25_local_Mean_r100_splitSoma_seedReq`. A pasted name overrides the lists and also reads non-default seed settings, for example `C0U1D1_local_Niblack_r100_splitSoma_s2.0_p12_seedReq`.
+
+The option sets the preprocessing, background removal, threshold or Tubeness variant, splitting and seed requirement for steps 1 and 2. The preprocessing, segmentation and splitting dialogs are then skipped, and the only extra question is the microglia channel. The arm names and the settings file use the same names as the Picker, so the run matches what you ranked. If the name is not understood, the macro stops with a message. If you start at step 2 and pick an option with no splitting and no seed requirement, it stops too, because there is nothing to do at that step.
+
+To set everything yourself, choose "(set every option myself in the next dialogs)" in the list. The dialogs below then appear as before.
+
+**The area filter is not taken from the option name.** Enter the Picker's best `Min_area_um2` in the area filter dialog in step 3. A reminder is shown there.
+
+Program 2.3's own dialogs still let you choose any global high threshold for hysteresis. The Picker's hysteresis options always use an Otsu high mask.
+
+#### Step 1 settings: preprocessing and thresholding (manual option only)
+
+Step 1 has two dialogs: 1a (preprocessing) and 1b (segmentation). They appear only when you do not choose a Picker option.
 
 ![](./images/Program_preprocessing.png)
 
@@ -310,12 +272,11 @@ Enter the option you chose in the TestImageSettingsPicker. Step 1 has two dialog
   - Tubeness: choose the variant, the minimum response (a number such as 20, or noise-relative such as k5) and the soma layer (mean + N x SD).
 - Program 2 post-processing (Despeckle, Close-, Remove Outliers) is always applied to global and local options. Tubeness uses the post-processing of its variant.
 
-#### Step 2 settings: splitting touching cells
+#### Step 2 settings: splitting touching cells (manual option only)
 
 ![](./images/Program_split.png)
 
 - **No splitting** or **Soma-seeded split (recommended).** One seed is placed per soma from the blurred original image and the mask is cut along watershed lines between seeds. A cell with branches is not cut.
-- How soma-seeded splitting works: The macro blurs the original image so that each cell body (soma) becomes one bright peak, and thin branches disappear. Particles with two or more peaks are cut along lines midway between the peaks, and particles with one peak are left whole. A single cell with many branches is therefore never cut, but two touching cells with separate somas are. Lower seed sigma or prominence finds more seeds and cuts more. Higher values cut less. Compare settings in the TestImageSettingsPicker montage (yellow lines show the cuts).
 - **Seed blur sigma (um)** (default 3) and **prominence** in 8-bit grey levels (default 8).
 - Splitting replaces the old upper area filter. Only particles at or above the minimum area are split.
 
@@ -323,14 +284,14 @@ Enter the option you chose in the TestImageSettingsPicker. Step 1 has two dialog
 
 ![](./images/Program_areafilters.png)
 
-- **Lower cell area filter (um^2):** removes small non-cell particles (default 100).
+- **Lower cell area filter (um^2):** removes small non-cell particles (default 100). Use the `Min_area_um2` of the Picker option you chose.
 - **Upper cell area filter (um^2, 0 = none):** no longer needed because touching cells are separated in step 2. Set it only to remove large debris.
 - **Do your images have ROIs traced?**
 - **Quantify a fluorescence signal in the microglia?** and which channel. This can be used to compare morphology between stain-positive and stain-negative cells. The channel can be the microglia channel. If you start at step 3, you are asked for the original images again to read this channel.
 
 #### Summary of your settings
 
-A summary of your settings is shown before the folders are chosen. Check it against the option you picked in the TestImageSettingsPicker.
+A summary of your settings is shown before the folders are chosen. Check it against the option you picked in the TestImageSettingsPicker, and check that the lower area filter matches the Picker's `Min_area_um2`.
 
 ![](./images/Program_summary.png)
 
@@ -358,7 +319,7 @@ All outputs are placed next to the input folder.
 | `ThresholdedImages/<image>_thresholded.tif` | Step 1 masks |
 | `SplitImages/<image>_thresholded.tif` | Step 2 masks with touching cells separated |
 | `MeasurementResults/<image>.csv` | Step 3: one .csv per input image with one row per cell |
-| `Areas.csv` | Area of each image (or of the ROIs within it) |
+| `Areas.csv` | Area of each image (or of the ROIs within it). Use it in MicrogliaMorphologyR to calculate density (cells / area analyzed) |
 | `SplitLog.csv` | Record of the splitting step |
 | `FinalDatasetParameters_<date-time>.txt` | Every setting used in the run, for your records. Keep it with your data |
 
@@ -388,7 +349,7 @@ Each row of a measurement file is one cell, with these columns:
 
 ---
 
-## Step 4. Cluster the cells in R with MicrogliaMorphologyR
+## Step 3. Cluster the cells in R with MicrogliaMorphologyR
 
 **In short:** use the measurement .csv files and `Areas.csv` as input to [MicrogliaMorphologyR](https://github.com/ciernialab/MicrogliaMorphologyR). It clusters the microglia into distinct morphological states and produces the label files that CBC needs.
 
@@ -398,12 +359,12 @@ Each row of a measurement file is one cell, with these columns:
    ### MicrogliaMorphologyR details
 </summary>
 
-Available at [github.com/ciernialab/MicrogliaMorphologyR](https://github.com/ciernialab/MicrogliaMorphologyR). For the MicrogliaMorphology Pipeline 2 workflow example, see the [Pipeline 2 tutorial](https://ciernialab.github.io/MicrogliaMorphologyR/articles/MicrogliaMorphologyPipeline2.html). One of its outputs is a set of ColorByCluster label files, which provide the information used to color the original microglia by cluster in Step 5.
+Available at [github.com/ciernialab/MicrogliaMorphologyR](https://github.com/ciernialab/MicrogliaMorphologyR). For the MicrogliaMorphology Pipeline 2 workflow example, see the [Pipeline 2 tutorial](https://ciernialab.github.io/MicrogliaMorphologyR/articles/MicrogliaMorphologyPipeline2.html). One of its outputs is a set of ColorByCluster label files, which provide the information used to color the original microglia by cluster in Step 4.
 </details>
 
 ---
 
-## Step 5. CBC (ColorByCluster)
+## Step 4. CBC (ColorByCluster)
 
 **In short:** run *Plugins > MicrogliaMorphology > MicrogliaMorphology ColorByCluster*, choose the folders of original images, final masks and cluster label files, pick a color for each cluster, and the macro saves the original images with each microglia colored by its cluster.
 
@@ -529,6 +490,7 @@ In single image mode with **"Mark cells now"**, click once on every microglia in
 #### Limits
 
 - A max projection can merge nuclei at different depths, and a microglia whose nucleus is not in the DAPI projection cannot be counted.
+- Only the first time point is used for time series.
 </details>
 
 <details>
