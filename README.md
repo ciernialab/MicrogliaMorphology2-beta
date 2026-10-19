@@ -220,17 +220,20 @@ Outputs are saved in a new folder next to the image, `SettingsTest_<image>/`:
 
 #### Settings from the TestImageSettingsPicker
 
-![](./images/MicrogliaMorphologyDialog2.png)
-
 If you start at step 1 or 2, a second dialog asks for the settings. You can choose them in one of two ways:
 
 **1. List/Enter Full Entry**
+
+![](./images/MicrogliaMorphologyDialog2.png)
+
 - **Pick from the lists:** choose one of the Picker's base options, then a splitting variant: soma-seeded split + seed requirement (`_splitSoma_seedReq`, the default), soma-seeded split (`_splitSoma`), or no splitting.
 - **Paste the option name:** copy it from `Top20_Options.csv` or `AllOptions_Ranked.csv`, for example `C0U1D1_RB25_local_Mean_r100_splitSoma_seedReq`. A pasted name overrides the lists and also reads non-default seed settings, for example `C0U1D1_local_Niblack_r100_splitSoma_s2.0_p12_seedReq`.
 
 The arm names and the settings file use the same names as the Picker, so the run matches what you ranked. If the name is not understood, the macro stops with a message. 
 
 **The area filter is not taken from the option name.** Enter the Picker's best `Min_area_um2` in the area filter dialog in step 3. A reminder is shown there.
+
+
 
 **2. Manual Entry**
 To set everything manually, choose "(set every option myself in the next dialogs)" in the list. The dialogs then walk you through each set of options for background removal, preprocessing, and thresholding. 
