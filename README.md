@@ -211,29 +211,27 @@ Outputs are saved in a new folder next to the image, `SettingsTest_<image>/`:
    ### Program details: dialogs and settings
 </summary>
 
-The screenshots below are from Program 2.2 and show the manual dialogs, filled in with the example option `C0U1D1_local_Niblack_r100_splitSoma_s2.0_p8` and a 100 um^2 lower area filter. In Program 2.3 the same settings can be filled in automatically from the Picker option (next section).
-
 #### First dialog: where to start and stop
 
-![](./images/Program_start.png)
+![](./images/MicrogliaMorphologyDiaglog1.png)
 
 - **Start at / Finish at:** choose the first and last of the three steps. You can begin at step 2 or 3 if the earlier steps are already done.
 - **Create output folders automatically:** creates `ThresholdedImages`, `SplitImages` and `MeasurementResults` next to the input folder. If unticked you are asked to choose each output folder (they should be empty).
 
 #### Settings from the TestImageSettingsPicker
 
+![](./images/MicrogliaMorphologyDialog2.png)
+
 If you start at step 1 or 2, a second dialog asks for the settings. You can choose them in one of two ways:
 
-- **Pick from the lists:** choose one of the Picker's 31 base options, then a splitting variant: soma-seeded split + seed requirement (`_splitSoma_seedReq`, the default), soma-seeded split (`_splitSoma`), or no splitting.
+- **Pick from the lists:** choose one of the Picker's base options, then a splitting variant: soma-seeded split + seed requirement (`_splitSoma_seedReq`, the default), soma-seeded split (`_splitSoma`), or no splitting.
 - **Paste the option name:** copy it from `Top20_Options.csv` or `AllOptions_Ranked.csv`, for example `C0U1D1_RB25_local_Mean_r100_splitSoma_seedReq`. A pasted name overrides the lists and also reads non-default seed settings, for example `C0U1D1_local_Niblack_r100_splitSoma_s2.0_p12_seedReq`.
 
-The option sets the preprocessing, background removal, threshold or Tubeness variant, splitting and seed requirement for steps 1 and 2. The preprocessing, segmentation and splitting dialogs are then skipped, and the only extra question is the microglia channel. The arm names and the settings file use the same names as the Picker, so the run matches what you ranked. If the name is not understood, the macro stops with a message. If you start at step 2 and pick an option with no splitting and no seed requirement, it stops too, because there is nothing to do at that step.
-
-To set everything yourself, choose "(set every option myself in the next dialogs)" in the list. The dialogs below then appear as before.
+The arm names and the settings file use the same names as the Picker, so the run matches what you ranked. If the name is not understood, the macro stops with a message. To set everything manually, choose "(set every option myself in the next dialogs)" in the list. The dialogs then walk you through each set of options for background removal, preprocessing, and thresholding. 
 
 **The area filter is not taken from the option name.** Enter the Picker's best `Min_area_um2` in the area filter dialog in step 3. A reminder is shown there.
 
-Program 2.3's own dialogs still let you choose any global high threshold for hysteresis. The Picker's hysteresis options always use an Otsu high mask.
+
 
 #### Step 1 settings: preprocessing and thresholding (manual option only)
 
