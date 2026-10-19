@@ -224,22 +224,24 @@ Outputs are saved in a new folder next to the image, `SettingsTest_<image>/`:
 
 If you start at step 1 or 2, a second dialog asks for the settings. You can choose them in one of two ways:
 
+**1. List/Enter Full Entry**
 - **Pick from the lists:** choose one of the Picker's base options, then a splitting variant: soma-seeded split + seed requirement (`_splitSoma_seedReq`, the default), soma-seeded split (`_splitSoma`), or no splitting.
 - **Paste the option name:** copy it from `Top20_Options.csv` or `AllOptions_Ranked.csv`, for example `C0U1D1_RB25_local_Mean_r100_splitSoma_seedReq`. A pasted name overrides the lists and also reads non-default seed settings, for example `C0U1D1_local_Niblack_r100_splitSoma_s2.0_p12_seedReq`.
 
-The arm names and the settings file use the same names as the Picker, so the run matches what you ranked. If the name is not understood, the macro stops with a message. To set everything manually, choose "(set every option myself in the next dialogs)" in the list. The dialogs then walk you through each set of options for background removal, preprocessing, and thresholding. 
+The arm names and the settings file use the same names as the Picker, so the run matches what you ranked. If the name is not understood, the macro stops with a message. 
 
 **The area filter is not taken from the option name.** Enter the Picker's best `Min_area_um2` in the area filter dialog in step 3. A reminder is shown there.
 
-
+**2. Manual Entry**
+To set everything manually, choose "(set every option myself in the next dialogs)" in the list. The dialogs then walk you through each set of options for background removal, preprocessing, and thresholding. 
 
 #### Step 1 settings: preprocessing and thresholding (manual option only)
 
 Step 1 has two dialogs: 1a (preprocessing) and 1b (segmentation). They appear only when you do not choose a Picker option.
 
-![](./images/Program_preprocessing.png)
+![](./images/Dialog3.png)
 
-![](./images/Program_segmentation.png)
+![](./images/Dialog4.png)
 
 - **Channel with the microglia signal** (leave at 1 for a single channel; the channel order must be consistent across images).
 - **Preprocessing:** contrast stretch, unsharp mask (radius and weight) and despeckle, each on or off. The Program 2 standard is unsharp mask plus despeckle (C0U1D1).
@@ -251,7 +253,7 @@ Step 1 has two dialogs: 1a (preprocessing) and 1b (segmentation). They appear on
 
 #### Step 2 settings: splitting touching cells (manual option only)
 
-![](./images/Program_split.png)
+![](./images/Dialog5.png)
 
 - **No splitting** or **Soma-seeded split (recommended).** One seed is placed per soma from the blurred original image and the mask is cut along watershed lines between seeds. A cell with branches is not cut.
 - **Seed blur sigma (um)** (default 3) and **prominence** in 8-bit grey levels (default 8).
