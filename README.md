@@ -128,7 +128,16 @@ Within Fiji, the Program also uses the Auto Threshold, Auto Local Threshold and 
 
 6.  Wait for the run to finish. The Top 20 montage opens when done.
 
+#### Options compared
 
+Option names follow the pattern `C<contrast stretch>U<unsharp mask>D<despeckle>[_<background removal>]_<method>[_<splitting>]`, where 1 is on and 0 is off. For example, `C0U1D1_auto_Huang` is Program 2 standard preprocessing (unsharp mask radius 3, weight 0.6, plus despeckle, no contrast stretch) followed by a global Huang threshold.
+
+- Global thresholds: Huang, Li
+- Local thresholds: Niblack, Mean, Phansalkar (radius 100 px at 0.3447 um/px, rescaled to your pixel size)
+- Hysteresis: local low threshold plus a global Otsu high mask
+- Tubeness ridge filter: TubeOrig and Tube3Post at fixed minimum responses, or noise-relative cutoffs written as `k5`. Tubeness options are not combined with background removal
+- Background removal before the other preprocessing: rolling ball (RB), sliding paraboloid (SP), white top-hat (TH), sizes in um
+- Splitting: no suffix (unsplit), `_splitSoma` (soma-seeded split, default seed sigma 3 um and prominence 8), `_splitSoma_seedReq` (split plus the seed requirement). A non-default seed is written `_splitSoma_s2.0_p12`
 
 #### How to read the montage panels
 
@@ -141,6 +150,10 @@ Colors in each panel:
 - **Yellow:** line where touching cells were cut
 
 Look for ramified cells that are whole with their processes present, few non-cell particles in the background, touching cells that are separated, and thin branches that are not lost.
+
+
+![](./images/Top20_Montage.png)
+
 
 #### How the options are ranked
 
@@ -181,21 +194,6 @@ Outputs are saved in a new folder next to the image, `SettingsTest_<image>/`:
 | `PreprocessBenchmark_Results.csv` | Particle counts and other metrics for each option and filter |
 | `Masks/<option>/` | The binary mask of every option |
 
-
-#### Options compared
-
-Option names follow the pattern `C<contrast stretch>U<unsharp mask>D<despeckle>[_<background removal>]_<method>[_<splitting>]`, where 1 is on and 0 is off. For example, `C0U1D1_auto_Huang` is Program 2 standard preprocessing (unsharp mask radius 3, weight 0.6, plus despeckle, no contrast stretch) followed by a global Huang threshold.
-
-- Global thresholds: Huang, Li
-- Local thresholds: Niblack, Mean, Phansalkar (radius 100 px at 0.3447 um/px, rescaled to your pixel size)
-- Hysteresis: local low threshold plus a global Otsu high mask
-- Tubeness ridge filter: TubeOrig and Tube3Post at fixed minimum responses, or noise-relative cutoffs written as `k5`. Tubeness options are not combined with background removal
-- Background removal before the other preprocessing: rolling ball (RB), sliding paraboloid (SP), white top-hat (TH), sizes in um
-- Splitting: no suffix (unsplit), `_splitSoma` (soma-seeded split, default seed sigma 3 um and prominence 8), `_splitSoma_seedReq` (split plus the seed requirement). A non-default seed is written `_splitSoma_s2.0_p12`
-
-#### Starting points from the benchmark
-
-These come from the synthetic benchmark images, scored by the equal-recovery score (mean recall over four cell shapes minus its spread). Your own ranking on a real image is the better guide.
 
 
 **Write down the full option name from `Top20_Options.csv`, and its `Min_area_um2`.** You will enter them in Step 2.
