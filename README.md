@@ -2,9 +2,20 @@
 
 #### *An updated version of the ImageJ macros for microglia morphology analysis*
 
-MicrogliaMorphology is a set of ImageJ/Fiji macros that offer a semi-automated approach to characterize 40 morphology features from hundreds to thousands of individual microglia.
+MicrogliaMorphology is a set of ImageJ/Fiji macros that offer a semi-automated approach to characterize 30 morphology features from hundreds to thousands of individual microglia.
 This is a modified version of [MicrogliaMorphology](https://github.com/ciernialab/MicrogliaMorphology) with several changes. It is more stable on big datasets that crashed the original pipeline, it can run on multiple regions per image, and it can quantify the intensity of another channel within the microglia. The output measurements are slightly different, so if you want to replicate the original data, please refer to the original GitHub.
 The former FracLac analysis had a memory leak that caused problems beyond roughly 20,000 cells. FracLac is no longer used and individual image files are no longer created for every cell, which decreases the file load.
+
+By default the macro produces 30 morphology measures per cell, plus 3 label columns (Label, Image, Region).
+
+Cell shape (9): Area, Perim., Major, Minor, Circ., Feret, MinFeret, Round, Solidity
+
+Convex hull (9): the same nine on the hull: hull_Area, hull_Perim., hull_Major, hull_Minor, hull_Circ., hull_Feret, hull_MinFeret, hull_Round, hull_Solidity
+
+Hull-derived (3): Hull span ratio, Max/min radii from hull, Relative variation (CV) hull
+
+Skeleton (9): # Branches, # Junctions, # End-point voxels, # Junction voxels, # Slab voxels, Average Branch Length, # Triple points, # Quadruple points, Maximum Branch Length
+
 
 **Created**: 21 January, 2026 **Last updated**: 18 Oct, 2026
 
