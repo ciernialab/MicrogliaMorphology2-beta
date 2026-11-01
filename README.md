@@ -1,6 +1,10 @@
 # MicrogliaMorphology2
 
 #### *An updated version of the ImageJ macros for microglia morphology analysis*
+**Current versions:** TestImageSettingsPicker v13 (AllOptions), Program 2.3, ColorByCluster, CountMicroglia v3.
+
+**Created**: 21 January, 2026 **Last updated**: 1 Nov, 2026
+
 
 MicrogliaMorphology is a set of ImageJ/Fiji macros that offer a semi-automated approach to characterize 27 morphology features from hundreds to thousands of individual microglia.
 This is a modified version of [MicrogliaMorphology](https://github.com/ciernialab/MicrogliaMorphology) with several changes. It is more stable on big datasets that crashed the original pipeline, it can run on multiple regions per image, and it can quantify the intensity of another channel within the microglia. The output measurements are slightly different, so if you want to replicate the original data, please refer to the original GitHub.
@@ -16,9 +20,8 @@ Hull-derived (3): Hull span ratio, Max/min radii from hull, Relative variation (
 
 Skeleton (9): # Branches, # Junctions, # End-point voxels, # Junction voxels, # Slab voxels, Average Branch Length, # Triple points, # Quadruple points, Maximum Branch Length
 
-**Current versions:** TestImageSettingsPicker v13 (AllOptions), Program 2.3, ColorByCluster, CountMicroglia v3.
 
-**Created**: 21 January, 2026 **Last updated**: 1 Nov, 2026
+![](./images/microglia_measurements_27features.pdf)
 
 <details>
 <summary>
