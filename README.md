@@ -16,8 +16,6 @@ Hull-derived (3): Hull span ratio, Max/min radii from hull, Relative variation (
 
 Skeleton (9): # Branches, # Junctions, # End-point voxels, # Junction voxels, # Slab voxels, Average Branch Length, # Triple points, # Quadruple points, Maximum Branch Length
 
-Note that hull_Solidity is always 1 (a convex hull is its own convex hull), so 29 of the 30 measures vary between cells.
-
 **Current versions:** TestImageSettingsPicker v13 (AllOptions), Program 2.3, ColorByCluster, CountMicroglia v3.
 
 **Created**: 21 January, 2026 **Last updated**: 31 Oct, 2026
