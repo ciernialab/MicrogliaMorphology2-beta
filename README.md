@@ -355,6 +355,7 @@ Five extra columns in each `MeasurementResults/<image>.csv`:
 
 - **Intensity is measured on the raw channel.** The quantification channel keeps its original bit depth (for example 16-bit), so the values are the raw grey values and can be compared between images, as long as all samples were imaged with the same settings. The 16-bit to 8-bit conversion setting only affects thresholding, not these values.
 - **The cell shape always comes from the mask.** Intensity is read inside the same cell and hull outlines that are measured for morphology, so ticking quantification does not change the morphology columns.
+- **"Remove these columns from the morphology clustering"** in MicrogliaMorphologyR, remove these columns from the dataframe used as input for morphology analysis. Merge them back in by cellID after morphology assignments to quantify levels within each morphology class.
 - Z-stacks are not projected for quantification. Use single-plane (or max projected) original images.
 - Background is not subtracted. If the background differs between images, measure it in a cell-free area and subtract it, or normalize Mean to the image background in R.
 - The intensity values are not morphology features. Leave them out of the clustering in MicrogliaMorphologyR and use them afterwards, for example to compare marker levels between clusters.
