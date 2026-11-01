@@ -151,7 +151,7 @@ Within Fiji, the Program also uses the Auto Threshold, Auto Local Threshold and 
     - **Over-growth check:** the percentage above which an option's particles are considered fused cells (default 140, 0 = off, see below).
     - **Minimum recovery:** options that recover fewer than this percentage of your marked cells are not ranked (default 25, 0 = off, see below).
 
-![](./images/picker_dialog_01.png)
+![](./images/testpicker1.png)
 
 3.  Confirm the pixel size when asked. If it is wrong, untick the box and enter the correct pixel width in microns. The value is used for every image in the run and the image file is not changed.
 
