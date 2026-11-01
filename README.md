@@ -490,7 +490,7 @@ The dialog remembers the settings from your last run, including the advanced par
 
 All sizes are in microns and use the image pixel size.
 
-![](./images/Count_advanced.png)
+![](./images/advancedparameters.png)
 
 | Group | Setting | Default | What it does |
 | ----- | ------- | ------- | ------------ |
