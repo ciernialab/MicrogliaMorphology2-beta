@@ -262,7 +262,7 @@ Outputs are saved in a new folder next to the image, `SettingsTest_<image>/`:
 
 #### First dialog: where to start and stop
 
-![](./images/MicrogliaMorphologyDiaglog1.png)
+![](./images/Dialog1.png)
 
 - **Start at / Finish at:** choose the first and last of the three steps. You can begin at step 2 or 3 if the earlier steps are already done.
 - **16-bit images: conversion to 8-bit:** percentile range (recommended) or full range. Use the same setting as in the Picker so the run matches what you ranked.
