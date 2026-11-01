@@ -2,15 +2,15 @@
 
 #### *An updated version of the ImageJ macros for microglia morphology analysis*
 
-MicrogliaMorphology is a set of ImageJ/Fiji macros that offer a semi-automated approach to characterize 30 morphology features from hundreds to thousands of individual microglia.
+MicrogliaMorphology is a set of ImageJ/Fiji macros that offer a semi-automated approach to characterize 27 morphology features from hundreds to thousands of individual microglia.
 This is a modified version of [MicrogliaMorphology](https://github.com/ciernialab/MicrogliaMorphology) with several changes. It is more stable on big datasets that crashed the original pipeline, it can run on multiple regions per image, and it can quantify the intensity of another channel within the microglia. The output measurements are slightly different, so if you want to replicate the original data, please refer to the original GitHub.
 The former FracLac analysis had a memory leak that caused problems beyond roughly 20,000 cells. FracLac is no longer used and individual image files are no longer created for every cell, which decreases the file load.
 
-By default the macro produces 30 morphology measures per cell, plus 3 label columns (Label, Image, Region).
+By default the macro produces 27 morphology measures per cell, plus 3 label columns (Label, Image, Region).
 
 Cell shape (9): Area, Perim., Major, Minor, Circ., Feret, MinFeret, Round, Solidity
 
-Convex hull (9): the same nine on the hull: hull_Area, hull_Perim., hull_Major, hull_Minor, hull_Circ., hull_Feret, hull_MinFeret, hull_Round, hull_Solidity
+Convex hull (6): the same measures on the hull: hull_Area, hull_Perim., hull_Major, hull_Minor, hull_Circ., hull_Round. hull_Feret, hull_MinFeret and hull_Solidity are not written because they are redundant
 
 Hull-derived (3): Hull span ratio, Max/min radii from hull, Relative variation (CV) hull
 
@@ -18,7 +18,7 @@ Skeleton (9): # Branches, # Junctions, # End-point voxels, # Junction voxels, # 
 
 **Current versions:** TestImageSettingsPicker v13 (AllOptions), Program 2.3, ColorByCluster, CountMicroglia v3.
 
-**Created**: 21 January, 2026 **Last updated**: 31 Oct, 2026
+**Created**: 21 January, 2026 **Last updated**: 1 Nov, 2026
 
 <details>
 <summary>
@@ -409,8 +409,8 @@ Each row of a measurement file is one cell, with these columns:
 | MinFeret | The minor Feret's caliper of the cell |
 | Round | The roundness of the cell |
 | Solidity | The solidity of the cell |
-| hull_X | The same measure but applied to the convex hull of the cell (hull_Solidity is always 1). With quantification ticked, hull_IntDen is also added |
-| Hull span ratio | The ratio between the major and the minor Feret's caliper of the convex hull |
+| hull_X | The same measure but applied to the convex hull of the cell, for Area, Perim., Major, Minor, Circ. and Round. With quantification ticked, hull_IntDen is also added |
+| Hull span ratio | The ratio between the major and the minor Feret's caliper of the convex hull (the same calipers as Feret and MinFeret, so it equals Feret / MinFeret) |
 | Max/min radii from hull | The ratio between the maximum radius of the convex hull and the smallest radius of the convex hull. Radius is taken to the center of mass of the convex hull |
 | Relative variation (CV) hull | The coefficient of variation (CV) of all long radii (distance from center of mass to corners of convex hull) and all short radii (distance from center of mass to closest point on edge of convex hull) |
 | skeleton_X | Results from the Analyze Skeleton function |
