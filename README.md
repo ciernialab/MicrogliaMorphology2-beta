@@ -288,8 +288,6 @@ The arm names and the settings file use the same names as the Picker, so the run
 **2. Manual Entry**
 To set everything manually, choose "(set every option myself in the next dialogs)" in the list. The dialogs then walk you through each set of options for background removal, preprocessing, and thresholding. 
 
-![](./images/MicrogliaMorphologyDialog2.png)
-
 #### Step 1 settings: preprocessing and thresholding (manual option only)
 
 Step 1 has two dialogs: 1a (preprocessing) and 1b (segmentation). They appear only when you do not choose a Picker option.
