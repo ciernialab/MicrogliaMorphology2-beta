@@ -122,7 +122,7 @@ Within Fiji, the Program also uses the Auto Threshold, Auto Local Threshold and 
     - **Minimum area filter(s) in um^2:** comma separated (default 50,100). Leave it blank to use 50, 100, 130 and 150.
     - **Microglia channel**, **test box size**, **panel size**, **montage columns**, and an optional **quick test** that processes only the central N x N pixels (shortens the run on large images, since Tubeness is slow).
 
-![](./images/pickertest1.png)
+![](./images/testpicker1.png)
 
 3.  Confirm the pixel size when asked. If it is wrong, untick the box and enter the correct pixel width in microns. The value is used for every image in the run and the image file is not changed.
 
