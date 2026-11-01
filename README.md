@@ -121,7 +121,6 @@ Within Fiji, the Program also uses the Auto Threshold, Auto Local Threshold and 
     - **Colour every kept particle differently** (recommended): each particle in the panels gets its own colour, so cuts and merged cells are easy to see.
     - **Minimum area filter(s) in um^2:** comma separated (default 50,100). Leave it blank to use 50, 100, 130 and 150.
     - **Microglia channel**, **test box size**, **panel size**, **montage columns**, and an optional **quick test** that processes only the central N x N pixels (shortens the run on large images, since Tubeness is slow).
-    - **Pruning check:** the percentage used to decide that a cell is complete (default 60, see below).
 
 ![](./images/pickertest1.png)
 
