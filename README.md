@@ -91,7 +91,7 @@ If you are interested in specific regions within your images, trace them in Imag
 
 ## Step 0. Installation
 
-**In short:** install Fiji and BioVoxxel Toolbox, copy the macro files into a new `MicrogliaMorphology` folder inside `Fiji.app/scripts/Plugins`, and restart Fiji.
+**In short:** install Fiji and copy the macro files into a new `MicrogliaMorphology` folder inside `Fiji.app/scripts/Plugins`, and restart Fiji.
 
 <details>
 <summary>
@@ -102,7 +102,6 @@ If you are interested in specific regions within your images, trace them in Imag
 #### Install Fiji and the required plugins
 
 - [FIJI/ImageJ](https://imagej.net/software/fiji/?Downloads)
-- [BioVoxxel Toolbox](https://imagej.net/plugins/biovoxxel-toolbox)
 
 Within Fiji, the Program also uses the Auto Threshold, Auto Local Threshold and Tubeness plugins, and Skeletonize (2D/3D). These are included in a standard Fiji install. MorphoLibJ is optional (the Close- step falls back to a standard method if it is absent). The white top-hat background removal option needs MorphoLibJ.
 
