@@ -91,7 +91,7 @@ If you are interested in specific regions within your images, trace them in Imag
 
 ## Step 0. Installation
 
-**In short:** install Fiji and copy the macro files into a new `MicrogliaMorphology` folder inside `Fiji.app/scripts/Plugins`, and restart Fiji.
+**In short:** install Fiji and BioVoxxel Toolbox, copy the macro files into a new `MicrogliaMorphology` folder inside `Fiji.app/scripts/Plugins`, and restart Fiji.
 
 <details>
 <summary>
@@ -102,6 +102,7 @@ If you are interested in specific regions within your images, trace them in Imag
 #### Install Fiji and the required plugins
 
 - [FIJI/ImageJ](https://imagej.net/software/fiji/?Downloads)
+- [BioVoxxel Toolbox](https://imagej.net/plugins/biovoxxel-toolbox)
 
 Within Fiji, the Program also uses the Auto Threshold, Auto Local Threshold and Tubeness plugins, and Skeletonize (2D/3D). These are included in a standard Fiji install. MorphoLibJ is optional (the Close- step falls back to a standard method if it is absent). The white top-hat background removal option needs MorphoLibJ.
 
@@ -150,7 +151,7 @@ Within Fiji, the Program also uses the Auto Threshold, Auto Local Threshold and 
     - **Over-growth check:** the percentage above which an option's particles are considered fused cells (default 140, 0 = off, see below).
     - **Minimum recovery:** options that recover fewer than this percentage of your marked cells are not ranked (default 25, 0 = off, see below).
 
-![](./images/testpicker1.png)
+![](./images/picker_dialog_01.png)
 
 3.  Confirm the pixel size when asked. If it is wrong, untick the box and enter the correct pixel width in microns. The value is used for every image in the run and the image file is not changed.
 
@@ -251,7 +252,7 @@ Outputs are saved in a new folder next to the image, `SettingsTest_<image>/`:
 
 ## Step 2. MicrogliaMorphologyProgram
 
-**In short:** run *Plugins > MicrogliaMorphology > MicrogliaMorphology Program2.3* on the whole dataset. It has three steps: (1) preprocess and threshold, (2) split touching cells, (3) measure single cells. Run all three in one go, or start and stop at any of them. Choose the option you picked in Step 1 from the list, or paste its name, and the Program sets the preprocessing, threshold and splitting for you. Use the same 16-bit conversion setting as in the Picker.
+**In short:** run *Plugins > MicrogliaMorphology > MicrogliaMorphology Program2.3* on the whole dataset. It has three steps: (1) preprocess and threshold, (2) split touching cells, (3) measure single cells. Run all three in one go, or start and stop at any of them. Choose the option you picked in Step 1 from the list, or paste its name, and the Program sets the preprocessing, threshold and splitting for you. Use the same 16-bit conversion setting as in the Picker. Step 3 can also measure the intensity of a second stain inside each microglia (see *Measuring intensity in another channel* below).
 
 <details>
 <summary>
@@ -261,7 +262,7 @@ Outputs are saved in a new folder next to the image, `SettingsTest_<image>/`:
 
 #### First dialog: where to start and stop
 
-![](./images/Dialog1.png)
+![](./images/MicrogliaMorphologyDiaglog1.png)
 
 - **Start at / Finish at:** choose the first and last of the three steps. You can begin at step 2 or 3 if the earlier steps are already done.
 - **16-bit images: conversion to 8-bit:** percentile range (recommended) or full range. Use the same setting as in the Picker so the run matches what you ranked.
@@ -286,6 +287,8 @@ The arm names and the settings file use the same names as the Picker, so the run
 
 **2. Manual Entry**
 To set everything manually, choose "(set every option myself in the next dialogs)" in the list. The dialogs then walk you through each set of options for background removal, preprocessing, and thresholding. 
+
+![](./images/MicrogliaMorphologyDialog2.png)
 
 #### Step 1 settings: preprocessing and thresholding (manual option only)
 
@@ -322,6 +325,39 @@ Step 1 has two dialogs: 1a (preprocessing) and 1b (segmentation). They appear on
 - **Upper cell area filter (um^2, 0 = none):** no longer needed because touching cells are separated in step 2. Set it only to remove large debris.
 - **Do your images have ROIs traced?**
 - **Quantify a fluorescence signal in the microglia?** and which channel. This can be used to compare morphology between stain-positive and stain-negative cells. The channel can be the microglia channel. If you start at step 3, you are asked for the original images again to read this channel.
+
+#### Measuring intensity in another channel within the microglia
+
+Step 3 can measure the fluorescence of a second stain inside each microglia, for example a marker of activation, phagocytosis or a reporter. This lets you compare the morphology of marker-positive and marker-negative cells, or relate marker level to cell shape.
+
+**What you need**
+
+- Multi-channel original images, with the microglia channel and the channel to quantify in the same file. The channel order must be the same in every image.
+- The masks from step 1 or 2. The cell outlines always come from the microglia mask. The second channel is only read inside those outlines, so it does not change which cells are found or their shape.
+
+**How to run it**
+
+1.  In the step 3 dialog, tick **"Quantify a fluorescence signal in the microglia?"** and enter the channel number to quantify. It can be the microglia channel itself, for example to measure Iba1 intensity.
+2.  When the folders are chosen, you are asked for the folder of original images. The Program finds each image's original by matching the start of the mask name to the original file name. If no original is found for an image, its cells are measured without intensity and a message is written to the Log.
+
+**What you get**
+
+Five extra columns in each `MeasurementResults/<image>.csv`:
+
+| Column | Meaning |
+| ------ | ------- |
+| Mean | Mean grey value of the quantification channel inside the cell |
+| Min, Max | Lowest and highest grey value inside the cell |
+| IntDen | Integrated density inside the cell (Area x Mean) |
+| hull_IntDen | Integrated density inside the convex hull of the cell. This includes the space between the processes, so it reflects signal around the cell as well as in it |
+
+**Things to check**
+
+- **Intensity is measured on the raw channel.** The quantification channel keeps its original bit depth (for example 16-bit), so the values are the raw grey values and can be compared between images, as long as all samples were imaged with the same settings. The 16-bit to 8-bit conversion setting only affects thresholding, not these values.
+- **The cell shape always comes from the mask.** Intensity is read inside the same cell and hull outlines that are measured for morphology, so ticking quantification does not change the morphology columns.
+- Z-stacks are not projected for quantification. Use single-plane (or max projected) original images.
+- Background is not subtracted. If the background differs between images, measure it in a cell-free area and subtract it, or normalize Mean to the image background in R.
+- The intensity values are not morphology features. Leave them out of the clustering in MicrogliaMorphologyR and use them afterwards, for example to compare marker levels between clusters.
 
 #### Summary of your settings
 
@@ -489,7 +525,7 @@ The dialog remembers the settings from your last run, including the advanced par
 
 All sizes are in microns and use the image pixel size.
 
-![](./images/advancedparameters.png)
+![](./images/Count_advanced.png)
 
 | Group | Setting | Default | What it does |
 | ----- | ------- | ------- | ------------ |
