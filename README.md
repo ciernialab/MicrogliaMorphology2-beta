@@ -21,7 +21,7 @@ Hull-derived (3): Hull span ratio, Max/min radii from hull, Relative variation (
 Skeleton (9): # Branches, # Junctions, # End-point voxels, # Junction voxels, # Slab voxels, Average Branch Length, # Triple points, # Quadruple points, Maximum Branch Length
 
 
-![](./images/microglia_measurements_27features.pdf)
+![](./images/microglia_measurements_27features.png)
 
 <details>
 <summary>
