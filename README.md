@@ -271,7 +271,7 @@ Outputs are saved in a new folder next to the image, `SettingsTest_<image>/`:
 
 #### First dialog: where to start and stop
 
-![](./images/MicrogliaMorphologyDiaglog1.png)
+![](./images/Program_dialog1_start.png)
 
 - **Start at / Finish at:** choose the first and last of the three steps. You can begin at step 2 or 3 if the earlier steps are already done.
 - **16-bit images: conversion to 8-bit:** percentile range (recommended) or full range. Use the same setting as in the Picker so the run matches what you ranked.
@@ -283,7 +283,7 @@ If you start at step 1 or 2, a second dialog asks for the settings. You can choo
 
 **1. List/Enter Full Entry**
 
-![](./images/Dialog3a.png)
+![](./images/Program_picker_settings.png)
 
 - **Pick from the lists:** choose one of the Picker's base options, then a splitting variant: soma-seeded split + seed requirement (`_splitSoma_seedReq`, the default), soma-seeded split (`_splitSoma`), or no splitting.
 - **Paste the option name:** copy it from `Top20_Options.csv` or `AllOptions_Ranked.csv`, for example `C0U1D1_RB25_local_Mean_r100_splitSoma_seedReq`. A pasted name overrides the lists and also reads non-default seed settings, for example `C0U1D1_local_Niblack_r100_splitSoma_s2.0_p12_seedReq`.
@@ -303,9 +303,9 @@ To set everything manually, choose "(set every option myself in the next dialogs
 
 Step 1 has two dialogs: 1a (preprocessing) and 1b (segmentation). They appear only when you do not choose a Picker option.
 
-![](./images/Dialog3.png)
+![](./images/Program_step1a_preprocessing.png)
 
-![](./images/Dialog4.png)
+![](./images/Program_step1b_segmentation.png)
 
 - **Channel with the microglia signal** (leave at 1 for a single channel; the channel order must be consistent across images).
 - **Background removal** before the other preprocessing: none, rolling ball, sliding paraboloid, Gaussian divide (flat-field) or white top-hat (needs MorphoLibJ), with the size in um. Background removal applies to the global, local and hysteresis approaches, not to Tubeness.
@@ -319,7 +319,7 @@ Step 1 has two dialogs: 1a (preprocessing) and 1b (segmentation). They appear on
 
 #### Step 2 settings: splitting touching cells (manual option only)
 
-![](./images/Dialog5.png)
+![](./images/Program_step2_splitting.png)
 
 - **No splitting** or **Soma-seeded split (recommended).** One seed is placed per soma from the blurred original image and the mask is cut along watershed lines between seeds. A cell with branches is not cut.
 - **Seed blur sigma (um)** (default 3) and **prominence** in 8-bit grey levels (default 8).
@@ -328,13 +328,13 @@ Step 1 has two dialogs: 1a (preprocessing) and 1b (segmentation). They appear on
 
 #### Step 3 settings: area filters and measurements
 
-![](./images/Program_areafilters.png)
+![](./images/Program_step3_areafilters.png)
 
 - **Lower cell area filter (um^2):** removes small non-cell particles (default 100). Use the `Min_area_um2` of the Picker option you chose.
 - **Upper cell area filter (um^2, 0 = none):** no longer needed because touching cells are separated in step 2. Set it only to remove large debris.
 - **Do your images have ROIs traced?**
 - **Quantify a fluorescence signal in the microglia?** and which channel. This can be used to compare morphology between stain-positive and stain-negative cells. The channel can be the microglia channel. If you start at step 3, you are asked for the original images again to read this channel.
-- **Also measure the signal area and puncta count in that channel?** Opens a second dialog to choose how signal pixels are found, with an option to test the settings on an example image (see *Measuring intensity in another channel* below).
+- **Also measure the signal area and puncta count in that channel?** Opens the signal settings, which decide which pixels count as signal and are chosen and previewed on a small test area of one image (see *Measuring Signal area and puncta count within the microglia* below).
 
 #### Measuring intensity in another channel within the microglia
 
@@ -366,12 +366,33 @@ Five extra columns in each `MeasurementResults/<image>.csv`:
 
 Intensity tells you how bright the stain is in each cell. For punctate stains such as CD68 it is often more useful to know how much of the cell is covered by signal. Tick **"also measure the signal area and puncta count in that channel"** under the quantification checkbox. The settings are then chosen on a small test area of one image, so each preview is quick:
 
-1.  **Choose a test image:** one original image that contains the channel you are quantifying, ideally with clear positive signal. Its channel opens straight away. (You can also skip the test and set the options without previewing them.)
+![](./images/Program_step3_signal_checkbox.png)
+
+1.  **Choose a test image:** one original image that contains the channel you are quantifying, ideally with clear positive signal. Its channel opens straight away. (You can also skip the test and set the options without previewing them.) If the pixel size has not been confirmed yet, the pixel size check appears when the test image opens (see *Pixel size check* below).
+
+    ![](./images/Signal_choose_test_image.png)
+
+    ![](./images/Signal_pixelsize_check.png)
+
 2.  **Place the test area:** drag the yellow box to a representative area and resize it if needed (default about 200 x 200 um). Smaller is faster. The image is cropped to the box.
+
+    ![](./images/Signal_place_test_area.png)
+
 3.  **Set the options and apply.** The settings window lists the options in the order they are applied:
+
+    ![](./images/Signal_settings_window.png)
+
     - **1. Background:** **background subtraction** (rolling ball radius in um, default 5, 0 = off) and **smoothing** (Gaussian sigma in um, default 0 = off). These are applied before thresholding, so the threshold, including a fixed value, is on the scale of the background-corrected channel.
     - **2. Threshold:** the **thresholding method** (below), the **fixed value**, the **auto threshold method**, and the **smallest punctum counted** (um^2, default 0.2; signal particles smaller than this are ignored for both the area and the count). At 0.3447 um per pixel, 0.2 um^2 is about 2 pixels, close to the resolution limit. If the preview shows specks that are not real signal, raise it to about 0.3 to 0.5 um^2; this mainly lowers the puncta count and changes the signal area little.
-    - **3. Next:** choose **Apply** and click OK to preview the settings on the test area. A second window, **Background-corrected test area**, opens next to the test area and shows the channel after background subtraction and smoothing, which is what the threshold is applied to, so you can see the effect of the background settings. The signal is outlined in yellow on both, and the **Results** box at the top of the window shows the threshold used, the % of the test area covered by signal, and the number of puncta (also per 1000 um^2). Both windows are displayed with the same fixed brightness range (0 to the bright end of the test area) for every Apply. This is display only: the pixel values are not rescaled, so a darker background-corrected window means the background really was lowered. The window comes back so you can change the options and apply again. Repeat until the yellow outlines follow the real signal and not the background, then choose **Proceed to the next step** and click OK. (ImageJ macro windows only have OK and Cancel buttons, so Apply and Proceed are the two choices above OK. Cancel stops the macro.)
+    - **3. Next:** choose **Apply** and click OK to preview the settings on the test area. A second window, **Background-corrected test area**, opens next to the test area and shows the channel after background subtraction and smoothing, which is what the threshold is applied to, so you can see the effect of the background settings. The signal is outlined in yellow on both, and the **Results** box at the top of the window shows the threshold used, the % of the test area covered by signal, and the number of puncta (also per 1000 um^2). Both windows are displayed with the same fixed brightness range (0 to the bright end of the test area) for every Apply. This is display only: the pixel values are not rescaled, so a darker background-corrected window means the background really was lowered.
+
+    ![](./images/Signal_preview_windows.png)
+
+    ![](./images/Signal_results_after_apply.png)
+
+    The window comes back so you can change the options and apply again. Repeat until the yellow outlines follow the real signal and not the background, then choose **Proceed to the next step** and click OK. (ImageJ macro windows only have OK and Cancel buttons, so Apply and Proceed are the two choices above OK. Cancel stops the macro.)
+
+    ![](./images/Signal_proceed.png)
 
 The thresholding methods. The channel is thresholded once per image, not per cell, so a cell with no signal gets a signal area of 0:
 
@@ -403,13 +424,17 @@ A cell with no signal gets Signal_area 0, Signal_fraction 0, Puncta_count 0, Sig
 
 #### Summary of your settings
 
-A summary of your settings is shown before the folders are chosen. Check it against the option you picked in the TestImageSettingsPicker, and check that the lower area filter matches the Picker's `Min_area_um2`.
+A summary of your settings is shown before the folders are chosen. Check it against the option you picked in the TestImageSettingsPicker, and check that the lower area filter matches the Picker's `Min_area_um2`. With signal quantification, the summary also lists the channel and the signal settings (for the test-area method, the threshold value that will be used for every image).
 
 ![](./images/Program_summary.png)
 
 #### Folders and image range
 
 Choose the input folder (original images when starting at step 1; thresholded masks plus original images when starting at step 2; final masks when starting at step 3). Then choose which range of images to process. Files are sorted alphabetically, so "Test_image_1.tif", "Test_image_10.tif" and "Test_image_9.tif" are listed in that order.
+
+![](./images/Program_choose_folder.png)
+
+![](./images/Program_image_range.png)
 
 #### Pixel size check
 
@@ -448,7 +473,7 @@ Each row of a measurement file is one cell, with these columns:
 | Image | The image name |
 | Region | The region name. If no region was present or "Do your input images have ROIs" was unselected this says "full_brain" |
 | Area | Area of the cell |
-| Optional: Mean, Min, Max, IntDen, hull_IntDen, Signal_area, Signal_fraction, Puncta_count, Signal_mean, Signal_IntDen | The measures within quantification channel, when quantification was ticked |
+| Optional: Mean, Min, Max, IntDen, hull_IntDen | The mean, minimum, maximum and integrated density of the grey intensity in the quantification channel, when quantification was ticked |
 | Perim. | Perimeter of the cell |
 | Major | Major radius of the fit ellipse |
 | Minor | Minor radius of the fit ellipse |
@@ -462,7 +487,7 @@ Each row of a measurement file is one cell, with these columns:
 | Max/min radii from hull | The ratio between the maximum radius of the convex hull and the smallest radius of the convex hull. Radius is taken to the center of mass of the convex hull |
 | Relative variation (CV) hull | The coefficient of variation (CV) of all long radii (distance from center of mass to corners of convex hull) and all short radii (distance from center of mass to closest point on edge of convex hull) |
 | skeleton_X | Results from the Analyze Skeleton function |
-| Optional: Signal_area, Signal_fraction, Puncta_count, Signal_mean, Signal_IntDen | Signal area and puncta count in the quantification channel, when that option was ticked (see *Measuring intensity in another channel*) |
+| Optional: Signal_area, Signal_fraction, Puncta_count, Signal_mean, Signal_IntDen | Signal area and puncta count in the quantification channel, when that option was ticked (see *Measuring Signal area and puncta count within the microglia*) |
 </details>
 
 ---
