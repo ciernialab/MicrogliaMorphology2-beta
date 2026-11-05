@@ -336,7 +336,11 @@ Step 1 has two dialogs: 1a (preprocessing) and 1b (segmentation). They appear on
 - **Quantify a fluorescence signal in the microglia?** and which channel. This can be used to compare morphology between stain-positive and stain-negative cells. The channel can be the microglia channel. If you start at step 3, you are asked for the original images again to read this channel.
 - **Also measure the signal area and puncta count in that channel?** Opens the signal settings, which decide which pixels count as signal and are chosen and previewed on a small test area of one image (see *Measuring Signal area and puncta count within the microglia* below).
 
-#### Measuring intensity in another channel within the microglia
+<details>
+<summary>
+
+   #### Measuring intensity in another channel within the microglia
+</summary>
 
 Step 3 can measure the fluorescence of a second stain inside each microglia, for example a marker of activation, phagocytosis or a reporter. This lets you compare the morphology of marker-positive and marker-negative cells, or relate marker level to cell shape.
 
@@ -360,9 +364,13 @@ Five extra columns in each `MeasurementResults/<image>.csv`:
 | Min, Max | Lowest and highest grey value inside the cell |
 | IntDen | Integrated density inside the cell (Area x Mean) |
 | hull_IntDen | Integrated density inside the convex hull of the cell. This includes the space between the processes, so it reflects signal around the cell as well as in it |
+</details>
 
+<details>
+<summary>
 
-#### Measuring Signal area and puncta count within the microglia
+   #### Measuring Signal area and puncta count within the microglia
+</summary>
 
 Intensity tells you how bright the stain is in each cell. For punctate stains such as CD68 it is often more useful to know how much of the cell is covered by signal. Tick **"also measure the signal area and puncta count in that channel"** under the quantification checkbox. The settings are then chosen on a small test area of one image, so each preview is quick:
 
@@ -421,6 +429,7 @@ A cell with no signal gets Signal_area 0, Signal_fraction 0, Puncta_count 0, Sig
 - Z-stacks are not projected for quantification. Use single-plane (or max projected) original images.
 - Background is not subtracted from the intensity values. Mean, IntDen, Signal_mean and Signal_IntDen are all raw values; the background subtraction in the signal settings is only used to decide which pixels count as signal. If the background differs between images, measure it in a cell-free area and subtract it, or normalize the intensities to the image background in R.
 - **Remove these columns from the morphology clustering.** The intensity and signal values (Mean, Min, Max, IntDen, hull_IntDen, and with the signal option Signal_area, Signal_fraction, Puncta_count, Signal_mean and Signal_IntDen) are not morphology features. In MicrogliaMorphologyR, remove them from the dataframe used as input for the morphology analysis, then merge them back in by cell ID after the morphology assignments to quantify levels within each morphology class.
+</details>
 
 #### Summary of your settings
 
@@ -473,7 +482,6 @@ Each row of a measurement file is one cell, with these columns:
 | Image | The image name |
 | Region | The region name. If no region was present or "Do your input images have ROIs" was unselected this says "full_brain" |
 | Area | Area of the cell |
-| Optional: Mean, Min, Max, IntDen, hull_IntDen | The mean, minimum, maximum and integrated density of the grey intensity in the quantification channel, when quantification was ticked |
 | Perim. | Perimeter of the cell |
 | Major | Major radius of the fit ellipse |
 | Minor | Minor radius of the fit ellipse |
@@ -487,6 +495,7 @@ Each row of a measurement file is one cell, with these columns:
 | Max/min radii from hull | The ratio between the maximum radius of the convex hull and the smallest radius of the convex hull. Radius is taken to the center of mass of the convex hull |
 | Relative variation (CV) hull | The coefficient of variation (CV) of all long radii (distance from center of mass to corners of convex hull) and all short radii (distance from center of mass to closest point on edge of convex hull) |
 | skeleton_X | Results from the Analyze Skeleton function |
+| Optional: Mean, Min, Max, IntDen, hull_IntDen | The mean, minimum, maximum and integrated density of the grey intensity in the quantification channel, when quantification was ticked |
 | Optional: Signal_area, Signal_fraction, Puncta_count, Signal_mean, Signal_IntDen | Signal area and puncta count in the quantification channel, when that option was ticked (see *Measuring Signal area and puncta count within the microglia*) |
 </details>
 
