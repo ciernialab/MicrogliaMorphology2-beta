@@ -1,9 +1,9 @@
 # MicrogliaMorphology2
 
 #### *An updated version of the ImageJ macros for microglia morphology analysis*
-**Current versions:** TestImageSettingsPicker v13 (AllOptions), Program 2.3, ColorByCluster, CountMicroglia v3.
+**Current versions:** TestImageSettingsPicker v13 (AllOptions), Program 2.4, ColorByCluster, CountMicroglia v3.
 
-**Created**: 21 January, 2026 **Last updated**: 1 Nov, 2026
+**Created**: 21 January, 2026 **Last updated**: 5 Nov, 2026
 
 
 MicrogliaMorphology is a set of ImageJ/Fiji macros that offer a semi-automated approach to characterize 27 morphology features from hundreds to thousands of individual microglia.
@@ -46,7 +46,7 @@ Run the macros in the order below. Each one is found in Fiji under *Plugins > Mi
 | ---- | ----- | ----------- | ------------ |
 | 0 | **Install** | Install Fiji and copy the macros into the Fiji plugins folder | Macros appear in the Plugins menu |
 | 1 | **TestImageSettingsPicker v13 AllOptions** | Open a test image, place a test box and click every microglia in it | About 93 options tested and ranked, a Top 20 montage and csv, and the settings to use for your dataset |
-| 2 | **MicrogliaMorphology Program 2.3** | Pick the Picker's option from a list (or paste its name) and run on the whole dataset | Thresholded masks, split masks and one measurement .csv per image |
+| 2 | **MicrogliaMorphology Program 2.4** | Pick the Picker's option from a list (or paste its name) and run on the whole dataset | Thresholded masks, split masks and one measurement .csv per image |
 | 3 | **Cluster in R** | Run [MicrogliaMorphologyR](https://github.com/ciernialab/MicrogliaMorphologyR) on the measurement files | Morphological clusters and a ColorByCluster label file per image |
 | 4 | **CBC (ColorByCluster)** | Point the macro at the original images, final masks and cluster label files | Original images with every microglia colored by its cluster |
 | Optional | **CountMicroglia v3** | Run on Iba1 + DAPI images | Microglia counts and densities per region |
@@ -63,7 +63,7 @@ How much each step needs:
 | Step | Memory use | Notes |
 | ---- | ---------- | ----- |
 | TestImageSettingsPicker | High | Runs about 93 options on one image and keeps a mask for each. Tubeness is the most demanding. If it runs out of memory, use the quick test crop or a smaller test box |
-| Program 2.3 | Moderate per image, long runs | Images are processed one at a time, but memory can build up over a large batch. If Fiji slows down or stops, restart it and use the image range option to continue from where it stopped |
+| Program 2.4 | Moderate per image, long runs | Images are processed one at a time, but memory can build up over a large batch. If Fiji slows down or stops, restart it and use the image range option to continue from where it stopped |
 | ColorByCluster | Low to moderate | Depends on image size |
 | CountMicroglia | Moderate to high | Large multi-channel images and Z-stacks are loaded whole before the max projection |
 
@@ -114,7 +114,7 @@ Within Fiji, the Program also uses the Auto Threshold, Auto Local Threshold and 
 2.  Save the following files from this repo (macros-scripts folder) into the new MicrogliaMorphology directory:
 
 - **MicrogliaMorphology_TestImageSettingsPicker_v13_AllOptions.ijm**
-- **MicrogliaMorphology_Program2.3.ijm**
+- **MicrogliaMorphology_Program2.4.ijm**
 - **MicrogliaMorphology_ColorByCluster.ijm**
 - **MicrogliaMorphology_CountMicroglia_v3.ijm** (optional)
 
@@ -253,7 +253,15 @@ Outputs are saved in a new folder next to the image, `SettingsTest_<image>/`:
 
 ## Step 2. MicrogliaMorphologyProgram
 
-**In short:** run *Plugins > MicrogliaMorphology > MicrogliaMorphology Program2.3* on the whole dataset. It has three steps: (1) preprocess and threshold, (2) split touching cells, (3) measure single cells. Run all three in one go, or start and stop at any of them. Choose the option you picked in Step 1 from the list, or paste its name, and the Program sets the preprocessing, threshold and splitting for you. Use the same 16-bit conversion setting as in the Picker. Step 3 can also measure the intensity of a second stain inside each microglia (see *Measuring intensity in another channel* below).
+**In short:** run *Plugins > MicrogliaMorphology > MicrogliaMorphology Program2.4* on the whole dataset. It has three steps: (1) preprocess and threshold, (2) split touching cells, (3) measure single cells. Run all three in one go, or start and stop at any of them. Choose the option you picked in Step 1 from the list, or paste its name, and the Program sets the preprocessing, threshold and splitting for you. Use the same 16-bit conversion setting as in the Picker. Step 3 can also measure the intensity of a second stain inside each microglia (see *Measuring intensity in another channel* below).
+
+**What is new in Program 2.4:**
+
+- **27 morphology columns:** hull_Feret, hull_MinFeret and hull_Solidity are no longer written. The hull's Feret diameters are the same as the cell's Feret and MinFeret, and the hull's solidity is about 1 for every cell, so these columns only duplicated information in PCA and clustering.
+- **Intensity on the raw channel:** the quantification channel keeps its own bit depth (for example 16-bit), and the cell shape always comes from the mask, so ticking quantification does not change the morphology columns.
+- **Signal area and puncta count (optional):** the area, fraction, puncta count and intensity of the thresholded signal (for example CD68) inside each cell, with the threshold set and previewed on a small test area first.
+- **Channels and pixel size:** the quantification channel is read correctly from hyperstacks and plain stacks; the pixel size is confirmed once at the start, and the masks are saved with their pixel size, so step 3 always measures in microns.
+
 
 <details>
 <summary>
@@ -326,6 +334,7 @@ Step 1 has two dialogs: 1a (preprocessing) and 1b (segmentation). They appear on
 - **Upper cell area filter (um^2, 0 = none):** no longer needed because touching cells are separated in step 2. Set it only to remove large debris.
 - **Do your images have ROIs traced?**
 - **Quantify a fluorescence signal in the microglia?** and which channel. This can be used to compare morphology between stain-positive and stain-negative cells. The channel can be the microglia channel. If you start at step 3, you are asked for the original images again to read this channel.
+- **Also measure the signal area and puncta count in that channel?** Opens a second dialog to choose how signal pixels are found, with an option to test the settings on an example image (see *Measuring intensity in another channel* below).
 
 #### Measuring intensity in another channel within the microglia
 
@@ -333,7 +342,7 @@ Step 3 can measure the fluorescence of a second stain inside each microglia, for
 
 **What you need**
 
-- Multi-channel original images, with the microglia channel and the channel to quantify in the same file. The channel order must be the same in every image.
+- Multi-channel original images, with the microglia channel and the channel to quantify in the same file. The channel order must be the same in every image. Hyperstacks and plain stacks with one channel per slice both work; the Log reports how many channels each image has and which one is used.
 - The masks from step 1 or 2. The cell outlines always come from the microglia mask. The second channel is only read inside those outlines, so it does not change which cells are found or their shape.
 
 **How to run it**
@@ -352,14 +361,44 @@ Five extra columns in each `MeasurementResults/<image>.csv`:
 | IntDen | Integrated density inside the cell (Area x Mean) |
 | hull_IntDen | Integrated density inside the convex hull of the cell. This includes the space between the processes, so it reflects signal around the cell as well as in it |
 
+**Signal area and puncta count (optional)**
+
+Intensity tells you how bright the stain is in each cell. For punctate stains such as CD68 it is often more useful to know how much of the cell is covered by signal. Tick **"also measure the signal area and puncta count in that channel"** under the quantification checkbox. The settings are then chosen on a small test area of one image, so each preview is quick:
+
+1.  **Choose a test image:** one original image that contains the channel you are quantifying, ideally with clear positive signal. Its channel opens straight away. (You can also skip the test and set the options without previewing them.)
+2.  **Place the test area:** drag the yellow box to a representative area and resize it if needed (default about 200 x 200 um). Smaller is faster. The image is cropped to the box.
+3.  **Set the options and apply.** The settings window lists the options in the order they are applied:
+    - **1. Background:** **background subtraction** (rolling ball radius in um, default 5, 0 = off) and **smoothing** (Gaussian sigma in um, default 0 = off). These are applied before thresholding, so the threshold, including a fixed value, is on the scale of the background-corrected channel.
+    - **2. Threshold:** the **thresholding method** (below), the **fixed value**, the **auto threshold method**, and the **smallest punctum counted** (um^2, default 0.2; signal particles smaller than this are ignored for both the area and the count). At 0.3447 um per pixel, 0.2 um^2 is about 2 pixels, close to the resolution limit. If the preview shows specks that are not real signal, raise it to about 0.3 to 0.5 um^2; this mainly lowers the puncta count and changes the signal area little.
+    - **3. Next:** choose **Apply** and click OK to preview the settings on the test area. A second window, **Background-corrected test area**, opens next to the test area and shows the channel after background subtraction and smoothing, which is what the threshold is applied to, so you can see the effect of the background settings. The signal is outlined in yellow on both, and the **Results** box at the top of the window shows the threshold used, the % of the test area covered by signal, and the number of puncta (also per 1000 um^2). Both windows are displayed with the same fixed brightness range (0 to the bright end of the test area) for every Apply. This is display only: the pixel values are not rescaled, so a darker background-corrected window means the background really was lowered. The window comes back so you can change the options and apply again. Repeat until the yellow outlines follow the real signal and not the background, then choose **Proceed to the next step** and click OK. (ImageJ macro windows only have OK and Cancel buttons, so Apply and Proceed are the two choices above OK. Cancel stops the macro.)
+
+The thresholding methods. The channel is thresholded once per image, not per cell, so a cell with no signal gets a signal area of 0:
+
+- **Fixed value:** pixels at or above a grey value you enter. The same rule is used for every image, so it is the most comparable across conditions when all images were taken with the same settings. Choose the value with the preview, ideally checking images from both control and treated animals.
+- **Auto threshold (calculated for each image):** an ImageJ method (Otsu, Triangle, MaxEntropy and others) run separately on every image. It corrects for brightness differences between images, but because the cutoff moves with each image, part of a real change in signal between conditions can be thresholded away, and an image with little real signal can still have background called "signal". Use it mainly when staining or imaging is inconsistent. After the run, check the cutoffs in `SignalThresholds.csv`: if they differ between your groups, the threshold is partly tracking the biology, and a fixed value is the safer choice.
+- **Auto threshold from the test area, then used as a fixed value:** the chosen ImageJ method is run once on the test area, and that value is used as a fixed value for every image. This gives an objective value with the same cutoff everywhere. It needs a test area, and the value is recalculated with the final settings when you proceed. Because it is calculated on the test area only, place the test area on tissue that is typical for your dataset.
+
+The Log lists how many channels the test image has, which one is used, and where the test area was placed.
+
+Five more columns are added to each `MeasurementResults/<image>.csv`:
+
+| Column | Meaning |
+| ------ | ------- |
+| Signal_area | Area of the cell covered by signal, in um^2 |
+| Signal_fraction | Signal_area divided by the cell Area (for example CD68 area / microglia area) |
+| Puncta_count | Number of separate signal particles in the cell, at or above the smallest punctum size |
+| Signal_mean | Mean grey value of the quantification channel within the signal pixels of the cell only (raw values, before background subtraction). NA when the cell has no signal, because there are no pixels to average |
+| Signal_IntDen | Integrated density within the signal pixels of the cell only (Signal_area x Signal_mean) |
+
+A cell with no signal gets Signal_area 0, Signal_fraction 0, Puncta_count 0, Signal_IntDen 0 and Signal_mean NA. The signal columns all describe the same pixels: signal pixels inside the cell outline, in particles at least the smallest punctum size. The threshold used for every image is saved in `SignalThresholds.csv` in the main folder (next to `Areas.csv`) (columns Image, Method, Threshold), and the settings are in `FinalDatasetParameters_<date-time>.txt`.
+
 **Things to check**
 
 - **Intensity is measured on the raw channel.** The quantification channel keeps its original bit depth (for example 16-bit), so the values are the raw grey values and can be compared between images, as long as all samples were imaged with the same settings. The 16-bit to 8-bit conversion setting only affects thresholding, not these values.
 - **The cell shape always comes from the mask.** Intensity is read inside the same cell and hull outlines that are measured for morphology, so ticking quantification does not change the morphology columns.
-- **Remove these columns from the morphology clustering** in MicrogliaMorphologyR, remove these columns from the dataframe used as input for morphology analysis. Merge them back in by cellID after morphology assignments to quantify levels within each morphology class.
 - Z-stacks are not projected for quantification. Use single-plane (or max projected) original images.
-- Background is not subtracted. If the background differs between images, measure it in a cell-free area and subtract it, or normalize Mean to the image background in R.
-- The intensity values are not morphology features. Leave them out of the clustering in MicrogliaMorphologyR and use them afterwards, for example to compare marker levels between clusters.
+- Background is not subtracted from the intensity values. Mean, IntDen, Signal_mean and Signal_IntDen are all raw values; the background subtraction in the signal settings is only used to decide which pixels count as signal. If the background differs between images, measure it in a cell-free area and subtract it, or normalize the intensities to the image background in R.
+- **Remove these columns from the morphology clustering.** The intensity and signal values (Mean, Min, Max, IntDen, hull_IntDen, and with the signal option Signal_area, Signal_fraction, Puncta_count, Signal_mean and Signal_IntDen) are not morphology features. In MicrogliaMorphologyR, remove them from the dataframe used as input for the morphology analysis, then merge them back in by cell ID after the morphology assignments to quantify levels within each morphology class.
 
 #### Summary of your settings
 
@@ -373,7 +412,11 @@ Choose the input folder (original images when starting at step 1; thresholded ma
 
 #### Pixel size check
 
-Before the run starts, the macro reports the pixel size it reads from the first image and asks you to confirm it. If it is wrong, untick the box and enter the correct pixel width in microns. The value is used for every image in the run.
+Before the run starts, the macro reports the pixel size it reads from the first image and asks you to confirm it. If it is wrong, untick the box and enter the correct pixel width in microns. The value is used for every image in the run. (If you set a signal threshold on a test image, this check happens when the test image opens.)
+
+- Any later image without a pixel size uses the value accepted here, so you are not asked again once the run has started. A note is written to the Log for each such image.
+- The thresholded masks (step 1) and split masks (step 2) are saved with the pixel size of their original image, so step 3 reads them in microns.
+- To check, open a mask and look at *Image > Properties*: the unit should be microns. In the measurement files, Area has decimals and is in um^2. Whole-number areas mean the cells were measured in pixels, and the area filters were then applied in pixels too.
 
 ![](./images/Program_pixelsize.png)
 </details>
@@ -393,7 +436,8 @@ All outputs are placed next to the input folder.
 | `MeasurementResults/<image>.csv` | Step 3: one .csv per input image with one row per cell |
 | `Areas.csv` | Area of each image (or of the ROIs within it). Use it in MicrogliaMorphologyR to calculate density (cells / area analyzed) |
 | `SplitLog.csv` | Record of the splitting step |
-| `FinalDatasetParameters_<date-time>.txt` | Every setting used in the run, including the 16-bit conversion, for your records. Keep it with your data |
+| `FinalDatasetParameters_<date-time>.txt` | Every setting used in the run, including the 16-bit conversion and the signal quantification settings, for your records. Keep it with your data |
+| `SignalThresholds.csv` | Only with the signal area and puncta count: the thresholding method and threshold used for every image |
 
 Each row of a measurement file is one cell, with these columns:
 
@@ -417,6 +461,7 @@ Each row of a measurement file is one cell, with these columns:
 | Max/min radii from hull | The ratio between the maximum radius of the convex hull and the smallest radius of the convex hull. Radius is taken to the center of mass of the convex hull |
 | Relative variation (CV) hull | The coefficient of variation (CV) of all long radii (distance from center of mass to corners of convex hull) and all short radii (distance from center of mass to closest point on edge of convex hull) |
 | skeleton_X | Results from the Analyze Skeleton function |
+| Optional: Signal_area, Signal_fraction, Puncta_count, Signal_mean, Signal_IntDen | Signal area and puncta count in the quantification channel, when that option was ticked (see *Measuring intensity in another channel*) |
 </details>
 
 ---
