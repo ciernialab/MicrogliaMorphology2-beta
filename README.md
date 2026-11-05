@@ -361,7 +361,8 @@ Five extra columns in each `MeasurementResults/<image>.csv`:
 | IntDen | Integrated density inside the cell (Area x Mean) |
 | hull_IntDen | Integrated density inside the convex hull of the cell. This includes the space between the processes, so it reflects signal around the cell as well as in it |
 
-**Signal area and puncta count (optional)**
+
+#### Measuring Signal area and puncta count within the microglia
 
 Intensity tells you how bright the stain is in each cell. For punctate stains such as CD68 it is often more useful to know how much of the cell is covered by signal. Tick **"also measure the signal area and puncta count in that channel"** under the quantification checkbox. The settings are then chosen on a small test area of one image, so each preview is quick:
 
