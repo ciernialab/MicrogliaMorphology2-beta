@@ -258,7 +258,7 @@ Outputs are saved in a new folder next to the image, `SettingsTest_<image>/`:
 **What is new in Program 2.4:**
 
 - **27 morphology columns:** hull_Feret, hull_MinFeret and hull_Solidity are no longer written. The hull's Feret diameters are the same as the cell's Feret and MinFeret, and the hull's solidity is about 1 for every cell, so these columns only duplicated information in PCA and clustering.
-- **Intensity on the raw channel:** the quantification channel keeps its own bit depth (for example 16-bit), and the cell shape always comes from the mask, so ticking quantification does not change the morphology columns.
+- **Intensity on the raw channel (optional):** the quantification channel keeps its own bit depth (for example 16-bit), and the cell shape always comes from the mask, so ticking quantification does not change the morphology columns.
 - **Signal area and puncta count (optional):** the area, fraction, puncta count and intensity of the thresholded signal (for example CD68) inside each cell, with the threshold set and previewed on a small test area first.
 - **Channels and pixel size:** the quantification channel is read correctly from hyperstacks and plain stacks; the pixel size is confirmed once at the start, and the masks are saved with their pixel size, so step 3 always measures in microns.
 
