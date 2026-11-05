@@ -448,7 +448,7 @@ Each row of a measurement file is one cell, with these columns:
 | Image | The image name |
 | Region | The region name. If no region was present or "Do your input images have ROIs" was unselected this says "full_brain" |
 | Area | Area of the cell |
-| Optional: Mean, Min, Max, IntDen, hull_IntDen | The mean, minimum, maximum and integrated density of the grey intensity in the quantification channel, when quantification was ticked |
+| Optional: Mean, Min, Max, IntDen, hull_IntDen, Signal_area, Signal_fraction, Puncta_count, Signal_mean, Signal_IntDen | The measures within quantification channel, when quantification was ticked |
 | Perim. | Perimeter of the cell |
 | Major | Major radius of the fit ellipse |
 | Minor | Minor radius of the fit ellipse |
